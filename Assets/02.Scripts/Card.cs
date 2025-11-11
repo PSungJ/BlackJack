@@ -13,6 +13,9 @@ public class Card
     public CardValue value;
     public int score; // 게임에서 사용될 점수
 
+    public Sprite frontSprite;  // 카드 앞면 이미지
+    public Sprite backSprite;   // 카드 뒷면 이미지
+
     public Card(CardSuit suit, CardValue value)
     {
         this.suit = suit;

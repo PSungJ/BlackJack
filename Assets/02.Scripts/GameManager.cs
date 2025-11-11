@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Linq;
 
 public class GameManager : MonoBehaviour
@@ -17,6 +18,14 @@ public class GameManager : MonoBehaviour
 
     public GameObject hitButton; // UI 버튼을 할당할 변수
     public GameObject standButton; // UI 버튼을 할당할 변수
+
+    [Header("UI References")]
+    public Transform playerHandTr;
+    public Transform aiHandTr;
+    public GameObject cardPrefab; // 카드 이미지(Image)가 있는 프리팹
+
+    private List<GameObject> playerCardObjects = new List<GameObject>();
+    private List<GameObject> dealerCardObjects = new List<GameObject>();
 
     void Start()
     {

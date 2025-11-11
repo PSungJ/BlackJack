@@ -51,12 +51,29 @@ public class DeckManager : MonoBehaviour
     //}
     #endregion
     public List<Card> deck;
+    private Dictionary<string, Sprite> cardSprites;
+    private Sprite cardBackSprite;
 
     void Awake()
     {
+        LoadCardSprites();
         InitializeDeck();
         ShuffleDeck();
     }
+
+    private void LoadCardSprites()
+    {
+        cardSprites = new Dictionary<string, Sprite>();
+        // Assets/Resources/Cards 폴더에서 모든 스프라이트를 로드
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Cards");
+        foreach (var sprite in sprites)
+        {
+            cardSprites.Add(sprite.name, sprite);
+        }
+        // 카드 뒷면 스프라이트 로드
+        cardBackSprite = Resources.Load<Sprite>("CardBack/Cards_51");
+    }
+
     private void InitializeDeck()
     {
         deck = new List<Card>();
@@ -64,7 +81,15 @@ public class DeckManager : MonoBehaviour
         {
             foreach (CardValue value in System.Enum.GetValues(typeof(CardValue)))
             {
-                deck.Add(new Card(suit, value));
+                Card card = new Card(suit, value);
+                // 파일명 규칙에 따라 스프라이트를 할당
+                string cardName = $"{suit.ToString().ToLower()}_{value.ToString().ToLower()}";
+                if (cardSprites.ContainsKey(cardName))
+                {
+                    card.frontSprite = cardSprites[cardName];
+                }
+                card.backSprite = cardBackSprite;
+                deck.Add(card);
             }
         }
     }
