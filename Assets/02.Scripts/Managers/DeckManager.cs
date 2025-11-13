@@ -5,10 +5,19 @@ using UnityEngine;
 [System.Serializable]
 public class Card
 {
-    public string suit;     // 카드 문양 (♠, ♥, ?, ♣)
-    public int value;       // 카드 숫자 (1~11, J/Q/K는 10)
-    public Sprite frontSprite; // 카드 앞면
-    public Sprite backSprite;  // 카드 뒷면 (공용)
+    public enum Rank
+    {
+        Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
+    }
+    public Rank rank;           // 카드 숫자 (1~11, J/Q/K는 10)
+    public int value;           // 실제 게임 점수용 값 (A=1, J/Q/K=10)
+    public Sprite frontSprite;  // 카드 앞면
+    public Sprite backSprite;   // 카드 뒷면 (공용)
+
+    public override string ToString()
+    {
+        return $"{rank} ({value})";
+    }
 }
     public class DeckManager : MonoBehaviour
 {
@@ -20,23 +29,25 @@ public class Card
 
     private Queue<Card> deck = new Queue<Card>();
 
-    private readonly string[] suits = { "♠", "♥", "♦", "♣" };
-
     /// 덱 초기화 및 섞기
     public void InitializeDeck()
     {
         deck.Clear();
         List<Card> allCards = new List<Card>();
 
-        for (int s = 0; s < suits.Length; s++)
+        for (int v = 1; v <= 13; v++) // A~K
         {
-            for (int v = 1; v <= 13; v++)
+            for (int s = 0; s < 4; s++) // 문양 4개, 하지만 suit 제거됨
             {
                 int spriteIndex = s * 13 + (v - 1);
+
+                Card.Rank rank = (Card.Rank)v;
+                int value = v > 10 ? 10 : v; // J/Q/K = 10, A = 1
+
                 allCards.Add(new Card
                 {
-                    suit = suits[s],
-                    value = v > 10 ? 10 : v, // J/Q/K는 10 처리
+                    rank = rank,
+                    value = value,
                     frontSprite = frontSprites[spriteIndex],
                     backSprite = backSprite
                 });

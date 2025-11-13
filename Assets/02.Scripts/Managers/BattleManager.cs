@@ -47,7 +47,7 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             communityCards.Add(deck.DrawCard());
-        }
+    }
     }
 
     /// 플레이어가 Hit 시 — 공용카드 1장 오픈 (플레이어와 보스 둘 다 적용)
@@ -55,15 +55,14 @@ public class BattleManager : MonoBehaviour
     {
         if (revealedCardCount < communityCards.Count)
         {
+            int index = revealedCardCount;
             revealedCardCount++;
-            Debug.Log($"공용카드 오픈: {communityCards[revealedCardCount - 1].value} {communityCards[revealedCardCount - 1].suit}");
 
-            // 오픈된 공용카드는 양쪽 플레이어의 계산에 포함됨
-            uiManager.RefreshCards(player.handCards, boss.handCards, GetRevealedCommunityCards());
-        }
-        else
-        {
-            Debug.Log("모든 공용카드를 이미 오픈했습니다.");
+            // UI에게 해당 인덱스 카드만 뒤집으라고 요청 (Refresh 전체 금지)
+            uiManager.FlipCommunityCard(index);
+
+            // 플레이어/보스의 합산 계산은 flip 완료 콜백에서 해도 되고, 
+            // 미리 계산해서 바로 표시할 수도 있음(시각적 동기화 고려).
         }
     }
 
@@ -78,8 +77,16 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log("플레이어가 Stand를 선택했습니다. 승패를 결정합니다.");
 
-        // 보스 카드 공개
-        uiManager.RefreshCards(player.handCards, boss.handCards, GetRevealedCommunityCards(), true);
+        // 보스 카드 공개 (UI 전체를 다시 그리지 말고, Flip만 실행)
+        uiManager.RevealBossCards();
+
+        // 잠깐 대기 후 (Flip 애니메이션 완료 타이밍) 승패 판정 실행
+        StartCoroutine(ResolveAfterDelay(0.6f));
+    }
+
+    private IEnumerator ResolveAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         ResolveBattle();
     }
 
@@ -93,7 +100,9 @@ public class BattleManager : MonoBehaviour
         CalculateDamage(playerScore, bossScore);
 
         uiManager.UpdateStatusUI(currentStage);
-        uiManager.ShowResult(boss.IsDefeated(), player.hp <= 0);
+
+        //점수를 직접 전달하여 UI가 다시 계산하지 않도록 수정
+        uiManager.ShowResult(boss.IsDefeated(), player.hp <= 0, playerScore, bossScore);
     }
 
     /// 규칙에 따른 데미지 계산
@@ -132,8 +141,8 @@ public class BattleManager : MonoBehaviour
         else
         {
             Debug.Log("무승부");
-        }
     }
+}
 
     private void BossTakeDamage(int playerScore, int bossScore)
     {

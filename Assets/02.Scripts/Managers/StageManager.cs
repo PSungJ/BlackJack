@@ -27,7 +27,6 @@ public class StageManager : MonoBehaviour
         Debug.Log($"다음 스테이지로 이동! (Stage {currentStage})");
     }
 
-    /// 플레이어 사망 시 처리
     public void OnPlayerDefeated()
     {
         Debug.Log("플레이어 패배! 게임 오버");
