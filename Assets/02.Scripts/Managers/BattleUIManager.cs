@@ -100,6 +100,11 @@ public class BattleUIManager : MonoBehaviour
         // 반드시 Init 호출 (front/back sprite와 라벨 전달)
         flip.Init(card.frontSprite, card.backSprite, $"{card.value}", isFaceUp);
 
+        //카드 눕히기 효과 추가
+        obj.transform.localRotation = Quaternion.Euler(20f, 0f, 0f);
+        // X축 기울기 → 카드가 바닥에 놓인 느낌
+        // Z축 랜덤 기울기 → 자연스러움
+
         cardUIs.Add(obj);
     }
 
