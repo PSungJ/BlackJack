@@ -101,8 +101,41 @@ public class BattleManager : MonoBehaviour
 
         uiManager.UpdateStatusUI(currentStage);
 
-        //점수를 직접 전달하여 UI가 다시 계산하지 않도록 수정
+        //결과창 & 버튼 처리
         uiManager.ShowResult(boss.IsDefeated(), player.hp <= 0, playerScore, bossScore);
+
+        //둘 다 죽지 않았다면 → 다음 라운드 진행
+        if (!boss.IsDefeated() && player.hp > 0)
+        {
+            StartCoroutine(StartNextRound());
+        }
+    }
+
+    private IEnumerator StartNextRound()
+    {
+        yield return new WaitForSeconds(1.0f); // 승부 순간 잠깐 보여주기
+
+        // --- UI 초기화 ---
+        uiManager.resultText.gameObject.SetActive(false);
+        uiManager.hitButton.interactable = true;
+        uiManager.standButton.interactable = true;
+
+        // "ROUND START" 연출
+        yield return StartCoroutine(uiManager.ShowRoundStart());
+
+        // 새로운 라운드를 위해 카드 초기화
+        player.ClearHand();
+        boss.ClearHand();
+        communityCards.Clear();
+        revealedCardCount = 0;
+
+        // 새로 2장씩, 커뮤니티 5장
+        player.Init(deck);
+        boss.Init(deck);
+        DealCommunityCards();
+
+        // UI 갱신
+        uiManager.RefreshCards(player.handCards, boss.handCards, GetRevealedCommunityCards());
     }
 
     /// 규칙에 따른 데미지 계산

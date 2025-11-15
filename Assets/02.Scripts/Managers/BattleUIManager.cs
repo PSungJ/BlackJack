@@ -17,11 +17,16 @@ public class BattleUIManager : MonoBehaviour
     public TMP_Text bossHPText;
     public TMP_Text stageText;
     public TMP_Text resultText;
+    public TMP_Text roundText;
+    public TMP_Text stageClearText;
+    public Image playerHPBar;
+    public Image bossHPBar;
 
     [Header("버튼")]
     public Button hitButton;
     public Button standButton;
     public Button nextStageButton;
+    public Button goLobbyButton;
 
     [Header("카드 슬롯")]
     public Transform playerCardParent;
@@ -39,13 +44,36 @@ public class BattleUIManager : MonoBehaviour
 
         resultText.gameObject.SetActive(false);
         nextStageButton.gameObject.SetActive(false);
+        roundText.gameObject.SetActive(false);
     }
 
     public void UpdateStatusUI(int stage)
     {
-        playerHPText.text = $"Player HP: {player.hp}";
-        bossHPText.text = $"Boss HP: {boss.hp}";
+        playerHPText.text = $"HP : {player.hp}";
+        bossHPText.text = $"HP : {boss.hp}";
         stageText.text = $"Stage {stage}";
+
+        //HP Bar 채우기 갱신
+        AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
+        AnimateHPBar(bossHPBar, (float)boss.hp / boss.baseHP);
+    }
+
+    public void AnimateHPBar(Image bar, float targetFill)
+    {
+        StartCoroutine(AnimateFill(bar, targetFill));
+    }
+
+    private IEnumerator AnimateFill(Image bar, float target)
+    {
+        float start = bar.fillAmount;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 3f; // 속도 (3 = 0.33초)
+            bar.fillAmount = Mathf.Lerp(start, target, t);
+            yield return null;
+        }
     }
 
     public void RefreshCards(List<Card> playerHand, List<Card> bossHand, List<Card> community, bool revealBoss = false)
@@ -154,6 +182,7 @@ public class BattleUIManager : MonoBehaviour
     {
         resultText.gameObject.SetActive(false);
         nextStageButton.gameObject.SetActive(false);
+        stageClearText.gameObject.SetActive(false);
         hitButton.interactable = true;
         standButton.interactable = true;
 
@@ -162,36 +191,41 @@ public class BattleUIManager : MonoBehaviour
 
     public void ShowResult(bool bossDefeated, bool playerDefeated, int playerScore, int bossScore)
     {
+        resultText.gameObject.SetActive(false);
+        nextStageButton.gameObject.SetActive(false);
+        goLobbyButton.gameObject.SetActive(false);
+
         if (playerDefeated)
         {
-            resultText.text = "<color=purple>Dealer Win!</color>";
+            StartCoroutine(ShowPlayerDie());
+            goLobbyButton.gameObject.SetActive(true);
+            return;
         }
         else if (bossDefeated)
         {
-            resultText.text = $"<color=purple>Player Win!</color>\nStage {battleManager.currentStage} Clear!";
+            StartCoroutine(ShowStageClear());
             nextStageButton.gameObject.SetActive(true);
+            return;
         }
         else
         {
+            // 일반 라운드 결과 표시
             string playerColor = (playerScore > bossScore && playerScore <= 21) ? "#00FF66" : "#CCCCCC";
             string bossColor = (bossScore > playerScore && bossScore <= 21) ? "#FF4444" : "#CCCCCC";
 
-            resultText.text =
+            string text =
                 $"<b><color={playerColor}>Player: {playerScore}</color></b>\n" +
                 $"<b><color={bossColor}>Dealer: {bossScore}</color></b>";
 
             if (playerScore > 21)
-                resultText.text = resultText.text.Replace(
-                    $"Player: {playerScore}",
-                    $"<color=#FF6666>Player (BURST): {playerScore}</color>");
+                text = text.Replace($"Player: {playerScore}", $"<color=#FF6666>Player (BURST): {playerScore}</color>");
 
             if (bossScore > 21)
-                resultText.text = resultText.text.Replace(
-                    $"Dealer: {bossScore}",
-                    $"<color=#FF6666>Dealer (BURST): {bossScore}</color>");
-        }
+                text = text.Replace($"Dealer: {bossScore}", $"<color=#FF6666>Dealer (BURST): {bossScore}</color>");
 
-        resultText.gameObject.SetActive(true);
+            // 일반 라운드 결과는 페이드 연출
+            StartCoroutine(ShowRoundResultWithFade(text));
+        }
     }
 
     public void RevealBossCards()
@@ -205,5 +239,129 @@ public class BattleUIManager : MonoBehaviour
                 flip.FlipToFront();
             }
         }
+    }
+
+    public IEnumerator ShowRoundStart()
+    {
+        roundText.text = "ROUND START";
+        roundText.gameObject.SetActive(true);
+
+        // 시작은 Alpha = 0
+        Color c = roundText.color;
+        c.a = 0;
+        roundText.color = c;
+
+        // 1) Fade In
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f; // 0.5초 정도
+            c.a = Mathf.Lerp(0, 1, t);
+            roundText.color = c;
+            yield return null;
+        }
+
+        // 2) 텍스트 유지
+        yield return new WaitForSeconds(1.8f);
+
+        // 3) Fade Out
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            c.a = Mathf.Lerp(1, 0, t);
+            roundText.color = c;
+            yield return null;
+        }
+
+        roundText.gameObject.SetActive(false);
+    }
+
+    public IEnumerator ShowStageClear()
+    {
+        stageClearText.text = $"<color=purple>Player Win!</color>\nStage {battleManager.currentStage} Clear!";
+        stageClearText.gameObject.SetActive(true);
+
+        Color c = stageClearText.color;
+        c.a = 0;
+        stageClearText.color = c;
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            c.a = Mathf.Lerp(0, 1, t);
+            stageClearText.color = c;
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1f);
+    }
+
+    public IEnumerator ShowPlayerDie()
+    {
+        stageClearText.text = $"<color=Red>You Die...</color>";
+        stageClearText.gameObject.SetActive(true);
+
+        Color c = stageClearText.color;
+        c.a = 0;
+        stageClearText.color = c;
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            c.a = Mathf.Lerp(0, 1, t);
+            stageClearText.color = c;
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            c.a = Mathf.Lerp(1, 0, t);
+            stageClearText.color = c;
+            yield return null;
+        }
+
+        stageClearText.gameObject.SetActive(false);
+    }
+
+    public IEnumerator ShowRoundResultWithFade(string text)
+    {
+        resultText.text = text;
+        resultText.gameObject.SetActive(true);
+
+        Color c = resultText.color;
+        c.a = 0;
+        resultText.color = c;
+
+        // Fade In
+        float t = 0;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            c.a = Mathf.Lerp(0, 1, t);
+            resultText.color = c;
+            yield return null;
+        }
+
+        // 표시 유지 시간
+        yield return new WaitForSeconds(2f);
+
+        // Fade Out
+        t = 0;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            c.a = Mathf.Lerp(1, 0, t);
+            resultText.color = c;
+            yield return null;
+        }
+
+        resultText.gameObject.SetActive(false);
     }
 }

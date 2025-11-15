@@ -7,7 +7,13 @@ public class PlayerController : MonoBehaviour
 {
     public List<Card> handCards = new List<Card>();     // 기본 2장
     public List<Card> activeCards = new List<Card>();   // 손패 + 오픈된 공용카드
-    public int hp = 100;
+    public int maxHP = 100;
+    public int hp;
+
+    public void ClearHand()
+    {
+        handCards.Clear();
+    }
 
     /// 배틀 시작 시 초기화
     public void Init(DeckManager deck)
@@ -70,7 +76,7 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(int dmg)
     {
         hp -= dmg;
-        hp = Mathf.Max(hp, 0);
+        hp = Mathf.Clamp(hp, 0, maxHP);
         Debug.Log($"플레이어 HP: {hp}");
     }
 

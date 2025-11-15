@@ -11,12 +11,15 @@ public class BossController : PlayerController
     {
         stageLevel = stage;
         hp = Mathf.RoundToInt(baseHP * Mathf.Pow(hpGrowthRate, stageLevel - 1));
+        hp = baseHP;
 
         handCards.Clear();
         handCards.Add(deck.DrawCard());
         handCards.Add(deck.DrawCard());
 
         Debug.Log($"보스 등장! 스테이지 {stageLevel}, HP: {hp}");
+
+        base.Init(deck);
     }
 
     public void ResetHand()
