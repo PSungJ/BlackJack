@@ -6,12 +6,13 @@ public class BossController : PlayerController
     public int stageLevel = 1;
     public int baseHP = 50;
     public float hpGrowthRate = 1.2f;
+    public int bossMaxHP;
 
     public void InitBoss(DeckManager deck, int stage)
     {
         stageLevel = stage;
-        hp = Mathf.RoundToInt(baseHP * Mathf.Pow(hpGrowthRate, stageLevel - 1));
-        hp = baseHP;
+        bossMaxHP = Mathf.RoundToInt(baseHP * Mathf.Pow(hpGrowthRate, stageLevel - 1));
+        hp = bossMaxHP;
 
         handCards.Clear();
         handCards.Add(deck.DrawCard());

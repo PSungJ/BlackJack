@@ -14,7 +14,7 @@ public class StageManager : MonoBehaviour
     {
         currentStage = 1;
         battleManager.currentStage = currentStage;
-        battleManager.StartBattle();
+        //battleManager.StartBattle();
     }
 
     /// 보스 처치 후 다음 스테이지로 진행
@@ -22,7 +22,7 @@ public class StageManager : MonoBehaviour
     {
         currentStage++;
         battleManager.currentStage = currentStage;
-        battleManager.StartBattle();
+        //battleManager.StartBattle();
 
         Debug.Log($"다음 스테이지로 이동! (Stage {currentStage})");
     }

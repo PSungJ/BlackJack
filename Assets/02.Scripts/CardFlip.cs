@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class CardFlip : MonoBehaviour
 {
@@ -29,16 +28,23 @@ public class CardFlip : MonoBehaviour
         UpdateVisual();
     }
 
+    // BattleUIManager에서: yield return flip.FlipToFrontCoroutine();
     public IEnumerator FlipToFrontCoroutine()
     {
-        if (isFaceUp || isFlipping) yield break;
-        yield return StartCoroutine(FlipAnimation(true));
+        // 오브젝트가 비활성화 상태라면 그냥 종료
+        if (!gameObject.activeInHierarchy || isFlipping || isFaceUp)
+            yield break;
+
+        yield return FlipAnimation(true);
     }
 
+    // 버튼이나 다른 곳에서 바로 호출용
     public void FlipToFront()
     {
-        if (!isFaceUp && !isFlipping)
-            StartCoroutine(FlipAnimation(true));
+        if (!gameObject.activeInHierarchy || isFlipping || isFaceUp)
+            return;
+
+        StartCoroutine(FlipAnimation(true));
     }
 
     public void FlipToBack()
@@ -50,29 +56,30 @@ public class CardFlip : MonoBehaviour
     private IEnumerator FlipAnimation(bool showFront)
     {
         isFlipping = true;
-        float halfTime = flipDuration / 2f;
-        float t = 0f;
-        var rect = GetComponent<RectTransform>();
 
-        //반으로 접히며 사라짐
-        while (t < halfTime)
+        float half = flipDuration / 2f;
+        float t = 0f;
+        RectTransform rect = GetComponent<RectTransform>();
+
+        // 1) 옆으로 접히면서 0까지
+        while (t < half)
         {
-            float scaleX = Mathf.Lerp(1f, 0f, t / halfTime);
-            rect.localScale = new Vector3(scaleX, 1f, 1f);
+            float sx = Mathf.Lerp(1f, 0.01f, t / half);
+            rect.localScale = new Vector3(sx, 1f, 1f);
             t += Time.deltaTime;
             yield return null;
         }
 
-        //이미지 전환
+        // 2) 이미지 전환
         isFaceUp = showFront;
         UpdateVisual();
 
-        //다시 펼쳐짐
+        // 3) 다시 펴짐
         t = 0f;
-        while (t < halfTime)
+        while (t < half)
         {
-            float scaleX = Mathf.Lerp(0f, 1f, t / halfTime);
-            rect.localScale = new Vector3(scaleX, 1f, 1f);
+            float sx = Mathf.Lerp(0.01f, 1f, t / half);
+            rect.localScale = new Vector3(sx, 1f, 1f);
             t += Time.deltaTime;
             yield return null;
         }
@@ -83,6 +90,9 @@ public class CardFlip : MonoBehaviour
 
     private void UpdateVisual()
     {
+        if (cardImage == null) return;
+
+        // 카드 오브젝트는 항상 active, 앞/뒷면만 Sprite로 처리
         if (isFaceUp)
             cardImage.sprite = frontSprite;
         else

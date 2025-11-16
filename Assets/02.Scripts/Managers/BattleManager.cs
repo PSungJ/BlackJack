@@ -22,12 +22,15 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        StartBattle();
+        StartCoroutine(StartBattleRoutine());
     }
 
     /// 전투 시작 시 초기화
-    public void StartBattle()
+    private IEnumerator StartBattleRoutine()
     {
+        // 스테이지 시작 셔플 연출
+        yield return StartCoroutine(uiManager.ShowShuffleAnimation());
+
         deck.InitializeDeck();
         player.Init(deck);  // 플레이어는 체력 유지, 카드만 새로
         boss.InitBoss(deck, currentStage);  // 보스는 스테이지에 맞춰 새로 등장
@@ -35,9 +38,38 @@ public class BattleManager : MonoBehaviour
         revealedCardCount = 0;
 
         uiManager.UpdateStatusUI(currentStage);
+
+        // 라운드 카드 나누기
+        yield return StartCoroutine(DealRoundCards());
+
+        // 카드 앞/뒷면 설정
         uiManager.RefreshCards(player.handCards, boss.handCards, GetRevealedCommunityCards());
 
         Debug.Log($"=== 스테이지 {currentStage} 전투 시작 ===");
+    }
+
+    private IEnumerator DealRoundCards()
+    {
+        // 플레이어 2장 (앞면)
+        for (int i = 0; i < player.handCards.Count; i++)
+        {
+            GameObject cardUI = uiManager.CreateCardInstant(player.handCards[i], uiManager.playerCardParent, true);
+            yield return StartCoroutine(uiManager.DealCardAnimation(cardUI, uiManager.playerCardParent.GetChild(i)));
+        }
+
+        // 보스 2장 (뒷면)
+        for (int i = 0; i < boss.handCards.Count; i++)
+        {
+            GameObject cardUI = uiManager.CreateCardInstant(boss.handCards[i], uiManager.bossCardParent, false);
+            yield return StartCoroutine(uiManager.DealCardAnimation(cardUI, uiManager.bossCardParent.GetChild(i)));
+        }
+
+        // 커뮤니티 5장 (처음엔 뒷면)
+        for (int i = 0; i < communityCards.Count; i++)
+        {
+            GameObject cardUI = uiManager.CreateCardInstant(communityCards[i], uiManager.communityCardParent, false);
+            yield return StartCoroutine(uiManager.DealCardAnimation(cardUI, uiManager.communityCardParent.GetChild(i)));
+        }
     }
 
     /// 공용 카드 5장 미리 준비 (아직 뒤집혀 있는 상태)
@@ -113,7 +145,10 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator StartNextRound()
     {
-        yield return new WaitForSeconds(1.0f); // 승부 순간 잠깐 보여주기
+        yield return new WaitForSeconds(3f); // 승부 순간 잠깐 보여주기
+
+        // 이전 라운드 카드 완전 삭제
+        uiManager.ClearAllCards();
 
         // --- UI 초기화 ---
         uiManager.resultText.gameObject.SetActive(false);
@@ -136,6 +171,9 @@ public class BattleManager : MonoBehaviour
 
         // UI 갱신
         uiManager.RefreshCards(player.handCards, boss.handCards, GetRevealedCommunityCards());
+
+        // 카드 나누기 애니메이션 실행
+        yield return StartCoroutine(DealRoundCards());
     }
 
     /// 규칙에 따른 데미지 계산
@@ -193,7 +231,10 @@ public class BattleManager : MonoBehaviour
 
     public void NextStage()
     {
+        // 이전 스테이지 카드 완전 삭제
+        uiManager.ClearAllCards();
+
         currentStage++;
-        StartBattle();
+        StartCoroutine(StartBattleRoutine());
     }
 }

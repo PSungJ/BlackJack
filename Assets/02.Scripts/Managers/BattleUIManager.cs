@@ -29,10 +29,15 @@ public class BattleUIManager : MonoBehaviour
     public Button goLobbyButton;
 
     [Header("카드 슬롯")]
+    public Transform deckPosition; // 카드가 날아오는 위치
     public Transform playerCardParent;
     public Transform bossCardParent;
     public Transform communityCardParent;
     public GameObject cardPrefab; // 카드 UI 프리팹
+
+    [Header("카드 섞기 연출")]
+    public GameObject shuffleLeft;
+    public GameObject shuffleRight;
 
     private List<GameObject> cardUIs = new List<GameObject>();
 
@@ -44,7 +49,118 @@ public class BattleUIManager : MonoBehaviour
 
         resultText.gameObject.SetActive(false);
         nextStageButton.gameObject.SetActive(false);
+        goLobbyButton.gameObject.SetActive(false);
         roundText.gameObject.SetActive(false);
+    }
+
+    public IEnumerator ShowShuffleAnimation()
+    {
+        shuffleLeft.SetActive(true);
+        shuffleRight.SetActive(true);
+
+        RectTransform left = shuffleLeft.GetComponent<RectTransform>();
+        RectTransform right = shuffleRight.GetComponent<RectTransform>();
+
+        Vector3 leftStart = new Vector3(-240f, 0, 0);
+        Vector3 rightStart = new Vector3(240f, 0, 0);
+        Vector3 center = new Vector3(0, 0, 0);
+
+        left.localPosition = leftStart;
+        right.localPosition = rightStart;
+
+        int shuffleCount = Random.Range(6, 10);
+
+        for (int i = 0; i < shuffleCount; i++)
+        {
+            float duration = Random.Range(0.18f, 0.28f);
+            float t = 0f;
+
+            // Z축(깊이) 튀어나오는 값
+            float zDepth = Random.Range(30f, 60f);
+
+            // X축/Y축 기울기 (입체감)
+            Quaternion leftTiltStart = Quaternion.Euler(Random.Range(-10f, -3f), Random.Range(-15f, -5f), Random.Range(-5f, 5f));
+            Quaternion leftTiltEnd = Quaternion.Euler(Random.Range(-3f, 10f), Random.Range(5f, 15f), Random.Range(-5f, 5f));
+
+            Quaternion rightTiltStart = Quaternion.Euler(Random.Range(-10f, -3f), Random.Range(5f, 15f), Random.Range(-5f, 5f));
+            Quaternion rightTiltEnd = Quaternion.Euler(Random.Range(-3f, 10f), Random.Range(-15f, -5f), Random.Range(-5f, 5f));
+
+            // 1) 중앙으로 모이며 깊이 + 기울어짐
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                float p = t / duration;
+
+                Vector3 lPos = Vector3.Lerp(leftStart, center, p);
+                Vector3 rPos = Vector3.Lerp(rightStart, center, p);
+
+                // Z축 깊이 추가 (입체감 핵심)
+                lPos.z = -Mathf.Sin(p * Mathf.PI) * zDepth;
+                rPos.z = -Mathf.Sin(p * Mathf.PI) * zDepth;
+
+                left.localPosition = lPos;
+                right.localPosition = rPos;
+
+                left.localRotation = Quaternion.Slerp(leftTiltStart, leftTiltEnd, p);
+                right.localRotation = Quaternion.Slerp(rightTiltStart, rightTiltEnd, p);
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(Random.Range(0.03f, 0.07f));
+
+            // 2) 다시 원래 자리로 복귀
+            t = 0f;
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                float p = t / duration;
+
+                Vector3 lPos = Vector3.Lerp(center, leftStart, p);
+                Vector3 rPos = Vector3.Lerp(center, rightStart, p);
+
+                lPos.z = -Mathf.Sin((1 - p) * Mathf.PI) * zDepth;
+                rPos.z = -Mathf.Sin((1 - p) * Mathf.PI) * zDepth;
+
+                left.localPosition = lPos;
+                right.localPosition = rPos;
+
+                left.localRotation = Quaternion.Slerp(leftTiltEnd, leftTiltStart, p);
+                right.localRotation = Quaternion.Slerp(rightTiltEnd, rightTiltStart, p);
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(Random.Range(0.05f, 0.12f));
+        }
+
+        shuffleLeft.SetActive(false);
+        shuffleRight.SetActive(false);
+    }
+
+    public IEnumerator DealCardAnimation(GameObject cardObj, Transform targetSlot)
+    {
+        float t = 0;
+        Vector3 start = deckPosition.position;
+        Quaternion startRot = Quaternion.Euler(0, 180, 0);
+        Quaternion endRot = Quaternion.Euler(20, 0, 0);
+
+        cardObj.transform.position = start;
+        cardObj.transform.rotation = startRot;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 3f;
+            cardObj.transform.position = Vector3.Lerp(start, targetSlot.position, t);
+            cardObj.transform.rotation = Quaternion.Slerp(startRot, endRot, t);
+            yield return null;
+        }
+
+        // 애니메이션 끝났으니 Slot 밑으로 이동
+        cardObj.transform.SetParent(targetSlot, true);
+
+        // 필요한 경우, localPosition / rotation 맞추기
+        cardObj.transform.localPosition = Vector3.zero;
     }
 
     public void UpdateStatusUI(int stage)
@@ -55,7 +171,7 @@ public class BattleUIManager : MonoBehaviour
 
         //HP Bar 채우기 갱신
         AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
-        AnimateHPBar(bossHPBar, (float)boss.hp / boss.baseHP);
+        AnimateHPBar(bossHPBar, (float)boss.hp / boss.bossMaxHP);
     }
 
     public void AnimateHPBar(Image bar, float targetFill)
@@ -78,15 +194,12 @@ public class BattleUIManager : MonoBehaviour
 
     public void RefreshCards(List<Card> playerHand, List<Card> bossHand, List<Card> community, bool revealBoss = false)
     {
-        ClearCardUI();
-
         // 플레이어는 항상 앞면
         int total = 0;
         foreach (var card in playerHand)
         {
             int displayValue = battleManager.player.GetCardDisplayValue(card, total);
             total += displayValue; // 누적 합
-            CreateCardUI(card, playerCardParent, displayValue, true);
         }
 
         // 보스 카드: revealBoss가 true일 때만 앞면
@@ -95,7 +208,6 @@ public class BattleUIManager : MonoBehaviour
         {
             int displayValue = battleManager.boss.GetCardDisplayValue(card, total);
             total += displayValue;
-            CreateCardUI(card, bossCardParent, displayValue, revealBoss);
         }
 
         // 커뮤니티 카드: Hit 전은 뒷면, 공개된 카드만 앞면
@@ -107,53 +219,33 @@ public class BattleUIManager : MonoBehaviour
             int displayValue = battleManager.player.GetCardDisplayValue(card, total);
             if (isFaceUp)
                 total += displayValue; // 공개된 카드만 누적
-            CreateCardUI(card, communityCardParent, displayValue, isFaceUp);
         }
     }
 
-    private void CreateCardUI(Card card, Transform parent, int displayValue, bool isFaceUp = true)
+    public GameObject CreateCardInstant(Card card, Transform parent, bool startFaceUp)
     {
         var obj = Instantiate(cardPrefab, parent);
-        //obj.GetComponentInChildren<TMP_Text>().text = displayValue.ToString();
-        obj.transform.localScale = Vector3.one;
-
-        //// CardFlip 컴포넌트 안전히 가져오기
         var flip = obj.GetComponent<CardFlip>();
-        if (flip == null)
-        {
-            Debug.LogError("CardPrefab에 CardFlip 컴포넌트를 붙이세요!");
-            return;
-        }
-
-        // 반드시 Init 호출 (front/back sprite와 라벨 전달)
-        flip.Init(card.frontSprite, card.backSprite, $"{card.value}", isFaceUp);
-
-        //카드 눕히기 효과 추가
-        obj.transform.localRotation = Quaternion.Euler(20f, 0f, 0f);
-        // X축 기울기 → 카드가 바닥에 놓인 느낌
-        // Z축 랜덤 기울기 → 자연스러움
-
-        cardUIs.Add(obj);
-    }
-
-    private void ClearCardUI()
-    {
-        foreach (var obj in cardUIs)
-            Destroy(obj);
-        cardUIs.Clear();
+        flip.Init(card.frontSprite, card.backSprite, $"{card.value}", startFaceUp);
+        return obj;
     }
 
     // 특정 커뮤니티 카드(인덱스)만 뒤집기 (재생성하지 않음)
     public void FlipCommunityCard(int index)
     {
         if (index < 0 || index >= communityCardParent.childCount) return;
-        var child = communityCardParent.GetChild(index);
-        var flip = child.GetComponent<CardFlip>();
+
+        // 슬롯 → 슬롯의 첫번째 자식(카드)
+        var slot = communityCardParent.GetChild(index);
+
+        if (slot.childCount == 0) return;  // 카드 없으면 종료
+
+        var card = slot.GetChild(0); // ← 카드 오브젝트
+        var flip = card.GetComponent<CardFlip>();
+
         if (flip != null)
         {
-            // 비동기적으로 뒤집고 끝난 뒤 원하면 콜백 수행
             StartCoroutine(FlipAndDo(() => {
-                // Flip 끝난 뒤 필요하면 할 작업 (예: 점수 갱신 등)
                 UpdateStatusUI(battleManager.currentStage);
             }, flip));
         }
@@ -176,6 +268,31 @@ public class BattleUIManager : MonoBehaviour
         standButton.interactable = false;
 
         battleManager.PlayerStand();
+    }
+
+    public void ClearAllCards()
+    {
+        // 카드 인스턴스 리스트 정리
+        foreach (var obj in cardUIs)
+            if (obj != null) Destroy(obj);
+
+        cardUIs.Clear();
+
+        // 슬롯 밑 자식 모두 삭제
+        ClearChildren(playerCardParent);
+        ClearChildren(bossCardParent);
+        ClearChildren(communityCardParent);
+    }
+
+    private void ClearChildren(Transform parent)
+    {
+        foreach (Transform slot in parent)
+        {
+            for (int i = slot.childCount - 1; i >= 0; i--)
+            {
+                Destroy(slot.GetChild(i).gameObject);
+            }
+        }
     }
 
     private void OnNextStage()
@@ -232,8 +349,13 @@ public class BattleUIManager : MonoBehaviour
     {
         for (int i = 0; i < bossCardParent.childCount; i++)
         {
-            var child = bossCardParent.GetChild(i);
-            var flip = child.GetComponent<CardFlip>();
+            Transform slot = bossCardParent.GetChild(i);
+
+            if (slot.childCount == 0) continue;
+
+            Transform card = slot.GetChild(0);
+            var flip = card.GetComponent<CardFlip>();
+
             if (flip != null)
             {
                 flip.FlipToFront();
@@ -262,7 +384,7 @@ public class BattleUIManager : MonoBehaviour
         }
 
         // 2) 텍스트 유지
-        yield return new WaitForSeconds(1.8f);
+        yield return new WaitForSeconds(1.5f);
 
         // 3) Fade Out
         t = 0f;
@@ -350,17 +472,7 @@ public class BattleUIManager : MonoBehaviour
         }
 
         // 표시 유지 시간
-        yield return new WaitForSeconds(2f);
-
-        // Fade Out
-        t = 0;
-        while (t < 1f)
-        {
-            t += Time.deltaTime * 2f;
-            c.a = Mathf.Lerp(1, 0, t);
-            resultText.color = c;
-            yield return null;
-        }
+        yield return new WaitForSeconds(10f);
 
         resultText.gameObject.SetActive(false);
     }
