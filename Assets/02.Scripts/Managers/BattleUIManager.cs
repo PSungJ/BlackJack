@@ -22,6 +22,13 @@ public class BattleUIManager : MonoBehaviour
     public Image playerHPBar;
     public Image bossHPBar;
 
+    [Header("Damage Effect")]
+    public GameObject playerIcon;
+    public GameObject bossIcon;
+    public GameObject projectilePrefab;
+    public GameObject hitEffectPrefab;
+    public GameObject damageTextPrefab;
+
     [Header("버튼")]
     public Button hitButton;
     public Button standButton;
@@ -475,5 +482,71 @@ public class BattleUIManager : MonoBehaviour
         yield return new WaitForSeconds(10f);
 
         resultText.gameObject.SetActive(false);
+    }
+
+    // Player → Boss 데미지 연출
+    public IEnumerator PlayDamageEffectToBoss(int damage)
+    {
+        // 1) 발사체 생성
+        GameObject proj = Instantiate(projectilePrefab, playerIcon.transform.position, Quaternion.identity, transform);
+        proj.GetComponent<ProjectileEffect>().Init(
+            bossIcon.transform,
+            () => StartCoroutine(OnBossHit(damage))
+        );
+
+        yield return null;
+    }
+
+    private IEnumerator OnBossHit(int damage)
+    {
+        // 2) Hit 이펙트
+        Vector3 worldPos = bossIcon.GetComponent<RectTransform>().position;
+        Instantiate(hitEffectPrefab, worldPos, Quaternion.identity);
+
+        // 3) 피격 연출
+        StartCoroutine(bossIcon.GetComponent<UIShake>().Shake());
+        StartCoroutine(bossIcon.GetComponent<UIFlash>().Flash(Color.red));
+
+        yield return new WaitForSeconds(0.1f);
+
+        // 4) 데미지 텍스트
+        var dmgText = Instantiate(damageTextPrefab, bossIcon.transform.position, Quaternion.identity, transform);
+        dmgText.GetComponent<FloatingDamageText>().Init(damage);
+
+        // 5) HP 감소 표시
+        AnimateHPBar(bossHPBar, (float)boss.hp / boss.bossMaxHP);
+    }
+
+    // Boss → Player 데미지 연출
+    public IEnumerator BossDamageEffectToPlayer(int damage)
+    {
+        // 1) 발사체 생성
+        GameObject proj = Instantiate(projectilePrefab, bossIcon.transform.position, Quaternion.identity, transform);
+        proj.GetComponent<ProjectileEffect>().Init(
+            playerIcon.transform,
+            () => StartCoroutine(OnPlayerHit(damage))
+        );
+
+        yield return null;
+    }
+
+    private IEnumerator OnPlayerHit(int damage)
+    {
+        // 2) Hit 이펙트
+        Vector3 worldPos = playerIcon.GetComponent<RectTransform>().position;
+        Instantiate(hitEffectPrefab, worldPos, Quaternion.identity);
+
+        // 3) 피격 연출
+        StartCoroutine(playerIcon.GetComponent<UIShake>().Shake());
+        StartCoroutine(playerIcon.GetComponent<UIFlash>().Flash(Color.red));
+
+        yield return new WaitForSeconds(0.1f);
+
+        // 4) 데미지 텍스트
+        var dmgText = Instantiate(damageTextPrefab, playerIcon.transform.position, Quaternion.identity, transform);
+        dmgText.GetComponent<FloatingDamageText>().Init(damage);
+
+        // 5) HP 감소 표시
+        AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
     }
 }

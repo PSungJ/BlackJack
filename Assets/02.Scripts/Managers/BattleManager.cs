@@ -192,13 +192,19 @@ public class BattleManager : MonoBehaviour
         else if (playerScore == 21 && bossScore != 21)
         {
             // 플레이어 BlackJack
-            boss.TakeDamage(10);
+            int damage = 10;
+            boss.TakeDamage(damage);
+
+            StartCoroutine(uiManager.PlayDamageEffectToBoss(damage));
             Debug.Log("플레이어 BlackJack! 보스 10 데미지");
         }
         else if (bossScore == 21 && playerScore != 21)
         {
             // 보스 BlackJack
-            player.TakeDamage(10);
+            int damage = 10;
+            boss.TakeDamage(damage);
+
+            StartCoroutine(uiManager.BossDamageEffectToPlayer(damage));
             Debug.Log("보스 BlackJack! 플레이어 10 데미지");
         }
         else if (playerScore <= 21 && (playerScore > bossScore || bossScore > 21))
@@ -219,6 +225,9 @@ public class BattleManager : MonoBehaviour
     {
         int damage = Mathf.Abs(playerScore - bossScore);
         boss.TakeDamage(damage);
+
+        StartCoroutine(uiManager.PlayDamageEffectToBoss(damage));
+
         Debug.Log($"플레이어 승! 보스 {damage} 데미지");
     }
 
@@ -226,6 +235,9 @@ public class BattleManager : MonoBehaviour
     {
         int damage = Mathf.Abs(playerScore - bossScore);
         player.TakeDamage(damage);
+
+        StartCoroutine(uiManager.BossDamageEffectToPlayer(damage));
+
         Debug.Log($"보스 승! 플레이어 {damage} 데미지");
     }
 

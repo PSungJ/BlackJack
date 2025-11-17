@@ -193,6 +193,11 @@ MonoBehaviour:
   stageClearText: {fileID: 303311473}
   playerHPBar: {fileID: 1906590603}
   bossHPBar: {fileID: 1995705807}
+  playerIcon: {fileID: 819698851}
+  bossIcon: {fileID: 1914943647}
+  projectilePrefab: {fileID: 8455699591383479417, guid: b45d8f41f6446214fac3888dda5f78d0, type: 3}
+  hitEffectPrefab: {fileID: 2433282508537954060, guid: 1a7cbcb8b44987b4d9b30ff93baab31d, type: 3}
+  damageTextPrefab: {fileID: 536520562922474340, guid: 891362ea072dfac45a3d982acdbb61ef, type: 3}
   hitButton: {fileID: 1459913888}
   standButton: {fileID: 1477418567}
   nextStageButton: {fileID: 1425268565}
@@ -1071,6 +1076,8 @@ GameObject:
   - component: {fileID: 819698854}
   - component: {fileID: 819698853}
   - component: {fileID: 819698855}
+  - component: {fileID: 819698857}
+  - component: {fileID: 819698856}
   m_Layer: 5
   m_Name: PlayerImage
   m_TagString: Untagged
@@ -1150,6 +1157,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!114 &819698856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819698851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5a28841265b1e14fb1dbab9e230d131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &819698857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819698851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c871eea027165ae4c94040b6df63d382, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetImage: {fileID: 59930601}
 --- !u!1 &819764119
 GameObject:
   m_ObjectHideFlags: 0
@@ -1423,8 +1455,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190335
-  m_fontColor: {r: 1, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1949,6 +1981,7 @@ MonoBehaviour:
   stageLevel: 1
   baseHP: 20
   hpGrowthRate: 1.2
+  bossMaxHP: 0
 --- !u!1 &1140561765
 GameObject:
   m_ObjectHideFlags: 0
@@ -3355,6 +3388,8 @@ GameObject:
   - component: {fileID: 1914943650}
   - component: {fileID: 1914943649}
   - component: {fileID: 1914943651}
+  - component: {fileID: 1914943653}
+  - component: {fileID: 1914943652}
   m_Layer: 5
   m_Name: BossImage
   m_TagString: Untagged
@@ -3434,6 +3469,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!114 &1914943652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914943647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5a28841265b1e14fb1dbab9e230d131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1914943653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914943647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c871eea027165ae4c94040b6df63d382, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetImage: {fileID: 1584352976}
 --- !u!1 &1995705805
 GameObject:
   m_ObjectHideFlags: 0
