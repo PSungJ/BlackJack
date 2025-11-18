@@ -266,15 +266,19 @@ public class BattleUIManager : MonoBehaviour
 
     private void OnHit()
     {
+        SoundManager.Instance.ResetIdleTimer();
+        SoundManager.Instance.PlayHitButton();
         battleManager.PlayerHit();
     }
 
     private void OnStand()
     {
+        SoundManager.Instance.ResetIdleTimer();
+        SoundManager.Instance.PlayStandButton();
+        battleManager.PlayerStand();
+        
         hitButton.interactable = false;
         standButton.interactable = false;
-
-        battleManager.PlayerStand();
     }
 
     public void ClearAllCards()
@@ -507,6 +511,9 @@ public class BattleUIManager : MonoBehaviour
         StartCoroutine(bossIcon.GetComponent<UIShake>().Shake());
         StartCoroutine(bossIcon.GetComponent<UIFlash>().Flash(Color.red));
 
+        // 피격 사운드
+        SoundManager.Instance.PlayDamage();
+
         yield return new WaitForSeconds(0.1f);
 
         // 4) 데미지 텍스트
@@ -539,6 +546,9 @@ public class BattleUIManager : MonoBehaviour
         // 3) 피격 연출
         StartCoroutine(playerIcon.GetComponent<UIShake>().Shake());
         StartCoroutine(playerIcon.GetComponent<UIFlash>().Flash(Color.red));
+
+        // 피격 사운드
+        SoundManager.Instance.PlayDamage();
 
         yield return new WaitForSeconds(0.1f);
 
