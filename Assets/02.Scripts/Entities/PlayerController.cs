@@ -10,6 +10,14 @@ public class PlayerController : MonoBehaviour
     public int maxHP = 100;
     public int hp;
 
+    public int armor = 0;   // 방어막
+
+    public void AddArmor(int amount)
+    {
+        armor += amount;
+        if (armor < 0) armor = 0;
+    }
+
     public void ClearHand()
     {
         handCards.Clear();
@@ -73,11 +81,27 @@ public class PlayerController : MonoBehaviour
         return total;
     }
 
+    // 데미지 계산을 방어막 먼저 소모하도록 수정
     public void TakeDamage(int dmg)
     {
-        hp -= dmg;
-        hp = Mathf.Clamp(hp, 0, maxHP);
-        Debug.Log($"플레이어 HP: {hp}");
+        int damage = dmg;
+
+        // 1) 방어막 먼저 소모
+        if (armor > 0)
+        {
+            int absorbed = Mathf.Min(armor, damage);
+            armor -= absorbed;
+            damage -= absorbed;
+        }
+
+        // 2) 남은 데미지를 HP에서 차감
+        if (damage > 0)
+        {
+            hp -= damage;
+            hp = Mathf.Clamp(hp, 0, maxHP);
+        }
+
+        Debug.Log($"[Damage] HP:{hp}, Armor:{armor}, Incoming:{dmg}, After:{damage}");
     }
 
     public int GetCardDisplayValue(Card card, int currentTotal)

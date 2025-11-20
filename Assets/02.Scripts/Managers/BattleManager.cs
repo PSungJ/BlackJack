@@ -12,6 +12,7 @@ public class BattleManager : MonoBehaviour
     public BossController boss;         // 보스 스크립트
     public DeckManager deck;            // 카드 덱 매니저
     public BattleUIManager uiManager;
+    public SkillManager skillManager;
 
     [Header("공용 카드 (플레이어와 보스가 공유)")]
     public List<Card> communityCards = new List<Card>();
@@ -28,6 +29,7 @@ public class BattleManager : MonoBehaviour
     /// 전투 시작 시 초기화
     private IEnumerator StartBattleRoutine()
     {
+        SkillManager.Instance.OnBattleStart(player);
         // 스테이지 시작 셔플 연출
         yield return StartCoroutine(uiManager.ShowShuffleAnimation());
 
@@ -99,7 +101,7 @@ public class BattleManager : MonoBehaviour
     }
 
     /// 현재 공개된 커뮤니티 카드만 반환
-    private List<Card> GetRevealedCommunityCards()
+    public List<Card> GetRevealedCommunityCards()
     {
         return communityCards.GetRange(0, revealedCardCount);
     }
@@ -141,6 +143,8 @@ public class BattleManager : MonoBehaviour
         {
             StartCoroutine(StartNextRound());
         }
+
+        SkillManager.Instance.OnStageClear(player);
     }
 
     private IEnumerator StartNextRound()
@@ -202,7 +206,7 @@ public class BattleManager : MonoBehaviour
         {
             // 보스 BlackJack
             int damage = 10;
-            boss.TakeDamage(damage);
+            player.TakeDamage(damage);
 
             StartCoroutine(uiManager.BossDamageEffectToPlayer(damage));
             Debug.Log("보스 BlackJack! 플레이어 10 데미지");
@@ -235,7 +239,7 @@ public class BattleManager : MonoBehaviour
     {
         int damage = Mathf.Abs(playerScore - bossScore);
         player.TakeDamage(damage);
-
+        SkillManager.Instance.OnPlayerDamaged(player);
         StartCoroutine(uiManager.BossDamageEffectToPlayer(damage));
 
         Debug.Log($"보스 승! 플레이어 {damage} 데미지");
@@ -247,6 +251,23 @@ public class BattleManager : MonoBehaviour
         uiManager.ClearAllCards();
 
         currentStage++;
+
+        // 스킬킬 해금 체크
+        SkillManager.Instance.CheckUnlock(currentStage);
+
         StartCoroutine(StartBattleRoutine());
+    }
+
+    public int GetNextCommunityIndex()
+    {
+        return revealedCardCount;
+    }
+
+    public Card GetCommunityCardAt(int index)
+    {
+        if (index < 0 || index >= communityCards.Count)
+            return null;
+
+        return communityCards[index];
     }
 }

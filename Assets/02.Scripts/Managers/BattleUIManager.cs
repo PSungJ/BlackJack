@@ -6,6 +6,8 @@ using TMPro;
 
 public class BattleUIManager : MonoBehaviour
 {
+    public static BattleUIManager Instance { get; private set; }
+
     [Header("참조")]
     public BattleManager battleManager;
     public StageManager stageManager;
@@ -46,7 +48,21 @@ public class BattleUIManager : MonoBehaviour
     public GameObject shuffleLeft;
     public GameObject shuffleRight;
 
+    [Header("스킬")]
+    public TMP_Text skillUnlockText;
+    public GameObject skillUnlockPanel;
+
     private List<GameObject> cardUIs = new List<GameObject>();
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -56,8 +72,8 @@ public class BattleUIManager : MonoBehaviour
 
         resultText.gameObject.SetActive(false);
         nextStageButton.gameObject.SetActive(false);
-        goLobbyButton.gameObject.SetActive(false);
         roundText.gameObject.SetActive(false);
+        skillUnlockPanel.SetActive(false);
     }
 
     public IEnumerator ShowShuffleAnimation()
@@ -321,12 +337,10 @@ public class BattleUIManager : MonoBehaviour
     {
         resultText.gameObject.SetActive(false);
         nextStageButton.gameObject.SetActive(false);
-        goLobbyButton.gameObject.SetActive(false);
 
         if (playerDefeated)
         {
             StartCoroutine(ShowPlayerDie());
-            goLobbyButton.gameObject.SetActive(true);
             return;
         }
         else if (bossDefeated)
@@ -558,5 +572,75 @@ public class BattleUIManager : MonoBehaviour
 
         // 5) HP 감소 표시
         AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
+    }
+
+    public void ShowCheatPreview(Card card)
+    {
+        // TODO: 실제 UI 구성에 맞춰 변경
+        Debug.Log($"[CHEAT] 다음 카드: {card.rank} (value {card.value})");
+
+        // 카드 팝업 UI가 따로 있다면 그곳에 표시
+        // cheatPreviewUI.SetActive(true);
+        // cheatPreviewUI.SetCard(card.frontSprite);
+    }
+
+    public void ShowFocusPrediction(int min, int max)
+    {
+        // 화면 중앙에 예측 텍스트 띄우기
+        resultText.gameObject.SetActive(true);
+        resultText.text = $"Boss 예상 점수 범위: {min} ~ {max}";
+    }
+
+    public void ShowReviveEffect()
+    {
+        Debug.Log("[REVIVE] 플레이어 부활!");
+
+        // TODO: 부활 애니메이션, 이펙트, 사운드 넣기
+        // reviveEffect.Play();
+    }
+
+    public IEnumerator ShowSkillUnlockedCoroutine(string skillName)
+    {
+        skillUnlockPanel.SetActive(true);
+        skillUnlockText.text = $"{skillName} 스킬 해금!";
+
+        // 페이드 인
+        CanvasGroup cg = skillUnlockPanel.GetComponent<CanvasGroup>();
+        cg.alpha = 0;
+
+        float t = 0;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            cg.alpha = Mathf.Lerp(0, 1, t);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(2f);
+
+        // 페이드 아웃
+        t = 0;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 2f;
+            cg.alpha = Mathf.Lerp(1, 0, t);
+            yield return null;
+        }
+
+        skillUnlockPanel.SetActive(false);
+    }
+
+    public void ShowSkillUnlock(string skillName)
+    {
+        skillUnlockPanel.SetActive(true);
+        skillUnlockText.text = $"{skillName} Skill UNLOCK!";
+
+        StartCoroutine(HideSkillUnlock());
+    }
+
+    private IEnumerator HideSkillUnlock()
+    {
+        yield return new WaitForSeconds(2f);
+        skillUnlockPanel.SetActive(false);
     }
 }
