@@ -16,5 +16,4 @@ MonoBehaviour:
   description: 
   unlockStage: 2
   icon: {fileID: 21300000, guid: 81fbe3b06608b7f4eb2a03bac7572a71, type: 3}
-  isUnlocked: 1
   healAmount: 5

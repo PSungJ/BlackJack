@@ -8,12 +8,10 @@ public abstract class SkillBase : ScriptableObject
     public string description;
     public int unlockStage;
     public Sprite icon;
-    public bool isUnlocked = false;
 
+    // 스킬 해금 조건 체크 ? 상태 변경은 SkillManager가 담당
     public virtual void TryUnlock(int currentStage)
     {
-        if (isUnlocked) return;
-
         if (currentStage >= unlockStage)
         {
             SkillManager.Instance.UnlockSkill(this);
@@ -21,7 +19,8 @@ public abstract class SkillBase : ScriptableObject
         }
     }
 
-    protected virtual void OnUnlocked()
+    // 실제 해금 시 호출되는 훅
+    public virtual void OnUnlocked()
     {
         Debug.Log($"{skillName} 스킬 해금됨!");
         BattleUIManager.Instance.ShowSkillUnlock(skillName);

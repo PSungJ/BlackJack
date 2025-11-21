@@ -30,6 +30,7 @@ public class BattleManager : MonoBehaviour
     private IEnumerator StartBattleRoutine()
     {
         SkillManager.Instance.OnBattleStart(player);
+        SkillManager.Instance.OnAcivateSkill(player);
         // 스테이지 시작 셔플 연출
         yield return StartCoroutine(uiManager.ShowShuffleAnimation());
 
@@ -143,8 +144,6 @@ public class BattleManager : MonoBehaviour
         {
             StartCoroutine(StartNextRound());
         }
-
-        SkillManager.Instance.OnStageClear(player);
     }
 
     private IEnumerator StartNextRound()
@@ -249,10 +248,12 @@ public class BattleManager : MonoBehaviour
     {
         // 이전 스테이지 카드 완전 삭제
         uiManager.ClearAllCards();
-
         currentStage++;
 
-        // 스킬킬 해금 체크
+        // 스테이지 클리어 후 Passives 발동
+        SkillManager.Instance.OnStageClear(player);
+
+        // 스킬 해금 체크
         SkillManager.Instance.CheckUnlock(currentStage);
 
         StartCoroutine(StartBattleRoutine());

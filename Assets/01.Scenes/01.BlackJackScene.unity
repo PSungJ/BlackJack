@@ -1022,7 +1022,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 320317137}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1428133895}
+        m_TargetAssemblyTypeName: SkillButtonHandler, Assembly-CSharp
+        m_MethodName: OnClick_Cheat
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &320317137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1475,7 +1487,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638704ef389e3884a8cd9cc1a52a7b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 1f63343847f7acc4a87d68bb4e5bff78, type: 2}
+  state:
+    data: {fileID: 11400000, guid: 1f63343847f7acc4a87d68bb4e5bff78, type: 2}
+    unlocked: 0
+    usedThisStage: 0
   icon: {fileID: 803295390}
   lockObj: {fileID: 2080350810}
   unlockScaleTime: 0.25
@@ -1569,7 +1584,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638704ef389e3884a8cd9cc1a52a7b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 630579b39d616cf4bab66d3523508e50, type: 2}
+  state:
+    data: {fileID: 11400000, guid: 630579b39d616cf4bab66d3523508e50, type: 2}
+    unlocked: 0
+    usedThisStage: 0
   icon: {fileID: 806851485}
   lockObj: {fileID: 105252778}
   unlockScaleTime: 0.25
@@ -3187,7 +3205,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638704ef389e3884a8cd9cc1a52a7b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 03bd4a352708ee64ea432173c0cc7c6c, type: 2}
+  state:
+    data: {fileID: 11400000, guid: 03bd4a352708ee64ea432173c0cc7c6c, type: 2}
+    unlocked: 0
+    usedThisStage: 0
   icon: {fileID: 1878729612}
   lockObj: {fileID: 1245442017}
   unlockScaleTime: 0.25
@@ -3481,7 +3502,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1288726870}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1740356493}
+        m_TargetAssemblyTypeName: SkillButtonHandler, Assembly-CSharp
+        m_MethodName: OnClick_Focus
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1288726870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3879,6 +3912,7 @@ GameObject:
   - component: {fileID: 1428133893}
   - component: {fileID: 1428133892}
   - component: {fileID: 1428133894}
+  - component: {fileID: 1428133895}
   m_Layer: 5
   m_Name: SkillSlot_Cheat
   m_TagString: Untagged
@@ -3957,10 +3991,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638704ef389e3884a8cd9cc1a52a7b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: bf94382d697ddbb4e8c27c6b5891f50c, type: 2}
+  state:
+    data: {fileID: 11400000, guid: bf94382d697ddbb4e8c27c6b5891f50c, type: 2}
+    unlocked: 0
+    usedThisStage: 0
   icon: {fileID: 320317137}
   lockObj: {fileID: 1556268788}
   unlockScaleTime: 0.25
+--- !u!114 &1428133895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428133890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f58e5e77867b53f4392891f1ea9611af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleManager: {fileID: 2064238309}
+  uiManager: {fileID: 28122010}
 --- !u!1 &1459913886
 GameObject:
   m_ObjectHideFlags: 0
@@ -4876,6 +4927,7 @@ GameObject:
   - component: {fileID: 1740356491}
   - component: {fileID: 1740356490}
   - component: {fileID: 1740356492}
+  - component: {fileID: 1740356493}
   m_Layer: 5
   m_Name: SkillSlot_Focus
   m_TagString: Untagged
@@ -4954,10 +5006,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638704ef389e3884a8cd9cc1a52a7b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 0090aa8a7e8c5bf498f52dbdbefe4731, type: 2}
+  state:
+    data: {fileID: 11400000, guid: 0090aa8a7e8c5bf498f52dbdbefe4731, type: 2}
+    unlocked: 0
+    usedThisStage: 0
   icon: {fileID: 1288726870}
   lockObj: {fileID: 2094660195}
   unlockScaleTime: 0.25
+--- !u!114 &1740356493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740356488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f58e5e77867b53f4392891f1ea9611af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleManager: {fileID: 2064238309}
+  uiManager: {fileID: 28122010}
 --- !u!1 &1777695355
 GameObject:
   m_ObjectHideFlags: 0
@@ -5451,6 +5520,22 @@ MonoBehaviour:
   - {fileID: 1190953085}
   - {fileID: 1740356492}
   - {fileID: 646627243}
+  skillStates:
+  - data: {fileID: 11400000, guid: 630579b39d616cf4bab66d3523508e50, type: 2}
+    unlocked: 0
+    usedThisStage: 0
+  - data: {fileID: 11400000, guid: bf94382d697ddbb4e8c27c6b5891f50c, type: 2}
+    unlocked: 0
+    usedThisStage: 0
+  - data: {fileID: 11400000, guid: 03bd4a352708ee64ea432173c0cc7c6c, type: 2}
+    unlocked: 0
+    usedThisStage: 0
+  - data: {fileID: 11400000, guid: 0090aa8a7e8c5bf498f52dbdbefe4731, type: 2}
+    unlocked: 0
+    usedThisStage: 0
+  - data: {fileID: 11400000, guid: 1f63343847f7acc4a87d68bb4e5bff78, type: 2}
+    unlocked: 0
+    usedThisStage: 0
 --- !u!1 &1995705805
 GameObject:
   m_ObjectHideFlags: 0

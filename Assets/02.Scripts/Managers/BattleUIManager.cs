@@ -74,6 +74,7 @@ public class BattleUIManager : MonoBehaviour
         nextStageButton.gameObject.SetActive(false);
         roundText.gameObject.SetActive(false);
         skillUnlockPanel.SetActive(false);
+        stageClearText.gameObject.SetActive(false);
     }
 
     public IEnumerator ShowShuffleAnimation()
@@ -447,7 +448,7 @@ public class BattleUIManager : MonoBehaviour
 
     public IEnumerator ShowPlayerDie()
     {
-        stageClearText.text = $"<color=Red>You Die...</color>";
+        stageClearText.text = $"<color=red>You Die...</color>";
         stageClearText.gameObject.SetActive(true);
 
         Color c = stageClearText.color;
@@ -465,16 +466,16 @@ public class BattleUIManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime * 2f;
-            c.a = Mathf.Lerp(1, 0, t);
-            stageClearText.color = c;
-            yield return null;
-        }
+        //t = 0f;
+        //while (t < 1f)
+        //{
+        //    t += Time.deltaTime * 2f;
+        //    c.a = Mathf.Lerp(1, 0, t);
+        //    stageClearText.color = c;
+        //    yield return null;
+        //}
 
-        stageClearText.gameObject.SetActive(false);
+        //stageClearText.gameObject.SetActive(false);
     }
 
     public IEnumerator ShowRoundResultWithFade(string text)

@@ -16,5 +16,4 @@ MonoBehaviour:
   description: 
   unlockStage: 4
   icon: {fileID: 21300000, guid: d6b3c448899e2c845b90cf2393011992, type: 3}
-  isUnlocked: 1
   isUsedThisStage: 0

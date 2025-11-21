@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
     {
         int damage = dmg;
 
-        // 1) 방어막 먼저 소모
+        // 방어막 처리
         if (armor > 0)
         {
             int absorbed = Mathf.Min(armor, damage);
@@ -94,14 +94,26 @@ public class PlayerController : MonoBehaviour
             damage -= absorbed;
         }
 
-        // 2) 남은 데미지를 HP에서 차감
-        if (damage > 0)
+        // HP 감소
+        hp -= damage;
+
+        // Revive를 먼저 검사해볼 기회 부여 (0 이하 상태에서 부활 가능)
+        if (hp <= 0)
         {
-            hp -= damage;
-            hp = Mathf.Clamp(hp, 0, maxHP);
+            SkillManager.Instance.OnPlayerDamaged(this);
         }
 
-        Debug.Log($"[Damage] HP:{hp}, Armor:{armor}, Incoming:{dmg}, After:{damage}");
+        // Revive가 hp를 되살렸다면 여기서 종료
+        if (hp > 0)
+        {
+            hp = Mathf.Clamp(hp, 0, maxHP);
+            Debug.Log($"[Damage] HP:{hp}");
+            return;
+        }
+
+        // 여기 왔다는 것은 진짜 사망
+        hp = 0;
+        Debug.Log($"[Damage] 플레이어 사망");
     }
 
     public int GetCardDisplayValue(Card card, int currentTotal)

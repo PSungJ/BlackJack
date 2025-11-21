@@ -10,6 +10,6 @@ public class HealSkill : PassiveSkill
     public override void OnStageClear(PlayerController player)
     {
         player.hp = Mathf.Min(player.maxHP, player.hp + healAmount);
-        Debug.Log($"[HEAL] 스테이지 클리어 → HP +{healAmount}");
+        Debug.Log($"[HealSkill] 스테이지 보상으로 HP +{healAmount}");
     }
 }
