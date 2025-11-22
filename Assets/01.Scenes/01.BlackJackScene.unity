@@ -1491,6 +1491,9 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 1f63343847f7acc4a87d68bb4e5bff78, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   icon: {fileID: 803295390}
   lockObj: {fileID: 2080350810}
   unlockScaleTime: 0.25
@@ -1588,6 +1591,9 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 630579b39d616cf4bab66d3523508e50, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   icon: {fileID: 806851485}
   lockObj: {fileID: 105252778}
   unlockScaleTime: 0.25
@@ -3005,13 +3011,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handCards: []
   activeCards: []
-  maxHP: 100
-  hp: 100
-  armor: 0
   stageLevel: 1
-  baseHP: 1
+  baseHP: 50
   hpGrowthRate: 1.2
   bossMaxHP: 0
+  bossHp: 0
 --- !u!1 &1140561765
 GameObject:
   m_ObjectHideFlags: 0
@@ -3209,6 +3213,9 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 03bd4a352708ee64ea432173c0cc7c6c, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   icon: {fileID: 1878729612}
   lockObj: {fileID: 1245442017}
   unlockScaleTime: 0.25
@@ -3995,6 +4002,9 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: bf94382d697ddbb4e8c27c6b5891f50c, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   icon: {fileID: 320317137}
   lockObj: {fileID: 1556268788}
   unlockScaleTime: 0.25
@@ -5010,6 +5020,9 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 0090aa8a7e8c5bf498f52dbdbefe4731, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   icon: {fileID: 1288726870}
   lockObj: {fileID: 2094660195}
   unlockScaleTime: 0.25
@@ -5524,18 +5537,33 @@ MonoBehaviour:
   - data: {fileID: 11400000, guid: 630579b39d616cf4bab66d3523508e50, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: bf94382d697ddbb4e8c27c6b5891f50c, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: 03bd4a352708ee64ea432173c0cc7c6c, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: 0090aa8a7e8c5bf498f52dbdbefe4731, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: 1f63343847f7acc4a87d68bb4e5bff78, type: 2}
     unlocked: 0
     usedThisStage: 0
+    reviveReady: 1
+    reviveCooldown: 5
+    reviveCooldownRemain: 0
 --- !u!1 &1995705805
 GameObject:
   m_ObjectHideFlags: 0

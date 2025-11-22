@@ -9,7 +9,7 @@ public abstract class SkillBase : ScriptableObject
     public int unlockStage;
     public Sprite icon;
 
-    // 스킬 해금 조건 체크 ? 상태 변경은 SkillManager가 담당
+    // 스킬 해금 조건 체크 - 상태 변경은 SkillManager가 담당
     public virtual void TryUnlock(int currentStage)
     {
         if (currentStage >= unlockStage)

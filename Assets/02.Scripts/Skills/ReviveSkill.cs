@@ -16,7 +16,7 @@ public class ReviveSkill : PassiveSkill
         // HP 0 이하일 때만 발동
         if (player.hp <= 0)
         {
-            player.hp = player.maxHP;
+            player.hp = player.maxHP / 2;
 
             state.reviveReady = false;
             state.reviveCooldownRemain = state.reviveCooldown;

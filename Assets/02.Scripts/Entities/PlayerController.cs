@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
         {
             Card drawn = deck.DrawCard();
             handCards.Add(drawn);
-    }
+        }
 
         // 시작 시 손패 복사
         activeCards = new List<Card>(handCards);
@@ -94,26 +94,27 @@ public class PlayerController : MonoBehaviour
             damage -= absorbed;
         }
 
-        // HP 감소
-        hp -= damage;
+        // 일반적인 데미지 처리
+        hp = Mathf.Clamp(hp - damage, 0, maxHP);
 
-        // Revive를 먼저 검사해볼 기회 부여 (0 이하 상태에서 부활 가능)
+        // Revive 시도
         if (hp <= 0)
         {
-            SkillManager.Instance.OnPlayerDamaged(this);
-        }
+            int previousHP = hp;  // debug용
+            SkillManager.Instance.OnPlayerDamaged(this); // ReviveSkill 실행
 
-        // Revive가 hp를 되살렸다면 여기서 종료
-        if (hp > 0)
-        {
-            hp = Mathf.Clamp(hp, 0, maxHP);
-            Debug.Log($"[Damage] HP:{hp}");
+            // Revive 성공 여부 확인
+            if (hp > 0)  // Revive가 hp를 되살림!
+            {
+                Debug.Log($"[REVIVE] 체력 복구 완료! {previousHP} → {hp}");
+                return;
+            }
+
+            // 진짜 죽음
+            hp = 0;
+            Debug.Log("[Damage] 플레이어 사망");
             return;
         }
-
-        // 여기 왔다는 것은 진짜 사망
-        hp = 0;
-        Debug.Log($"[Damage] 플레이어 사망");
     }
 
     public int GetCardDisplayValue(Card card, int currentTotal)

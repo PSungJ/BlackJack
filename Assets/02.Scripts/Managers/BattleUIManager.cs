@@ -7,6 +7,7 @@ using TMPro;
 public class BattleUIManager : MonoBehaviour
 {
     public static BattleUIManager Instance { get; private set; }
+    private Coroutine roundResultCoroutine;
 
     [Header("참조")]
     public BattleManager battleManager;
@@ -187,15 +188,19 @@ public class BattleUIManager : MonoBehaviour
         cardObj.transform.localPosition = Vector3.zero;
     }
 
-    public void UpdateStatusUI(int stage)
+    public void UpdateStatusUI()
     {
         playerHPText.text = $"HP : {player.hp}";
-        bossHPText.text = $"HP : {boss.hp}";
-        stageText.text = $"Stage {stage}";
+        bossHPText.text = $"HP : {boss.bossHp}";
 
         //HP Bar 채우기 갱신
         AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
-        AnimateHPBar(bossHPBar, (float)boss.hp / boss.bossMaxHP);
+        AnimateHPBar(bossHPBar, (float)boss.bossHp / boss.bossMaxHP);
+    }
+
+    public void UpdateStage(int stage)
+    {
+        stageText.text = $"Stage {stage}";
     }
 
     public void AnimateHPBar(Image bar, float targetFill)
@@ -270,7 +275,7 @@ public class BattleUIManager : MonoBehaviour
         if (flip != null)
         {
             StartCoroutine(FlipAndDo(() => {
-                UpdateStatusUI(battleManager.currentStage);
+                UpdateStage(battleManager.currentStage);
             }, flip));
         }
     }
@@ -367,7 +372,7 @@ public class BattleUIManager : MonoBehaviour
                 text = text.Replace($"Dealer: {bossScore}", $"<color=#FF6666>Dealer (BURST): {bossScore}</color>");
 
             // 일반 라운드 결과는 페이드 연출
-            StartCoroutine(ShowRoundResultWithFade(text));
+            ShowRoundResult(text);
         }
     }
 
@@ -465,17 +470,6 @@ public class BattleUIManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1f);
-
-        //t = 0f;
-        //while (t < 1f)
-        //{
-        //    t += Time.deltaTime * 2f;
-        //    c.a = Mathf.Lerp(1, 0, t);
-        //    stageClearText.color = c;
-        //    yield return null;
-        //}
-
-        //stageClearText.gameObject.SetActive(false);
     }
 
     public IEnumerator ShowRoundResultWithFade(string text)
@@ -501,6 +495,16 @@ public class BattleUIManager : MonoBehaviour
         yield return new WaitForSeconds(10f);
 
         resultText.gameObject.SetActive(false);
+        roundResultCoroutine = null;
+    }
+
+    // 코루틴을 저장해두고, 새로운 텍스트 요청이 오면 기존 코루틴을 먼저 Stop
+    public void ShowRoundResult(string text)
+    {
+        if (roundResultCoroutine != null)
+            StopCoroutine(roundResultCoroutine);
+
+        roundResultCoroutine = StartCoroutine(ShowRoundResultWithFade(text));
     }
 
     // Player → Boss 데미지 연출
@@ -536,7 +540,7 @@ public class BattleUIManager : MonoBehaviour
         dmgText.GetComponent<FloatingDamageText>().Init(damage);
 
         // 5) HP 감소 표시
-        AnimateHPBar(bossHPBar, (float)boss.hp / boss.bossMaxHP);
+        AnimateHPBar(bossHPBar, (float)boss.bossHp / boss.bossMaxHP);
     }
 
     // Boss → Player 데미지 연출
@@ -573,6 +577,11 @@ public class BattleUIManager : MonoBehaviour
 
         // 5) HP 감소 표시
         AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
+    }
+
+    public void ShowHealEffect()
+    {
+
     }
 
     public void ShowCheatPreview(Card card)

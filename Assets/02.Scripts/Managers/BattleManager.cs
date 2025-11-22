@@ -31,16 +31,17 @@ public class BattleManager : MonoBehaviour
     {
         SkillManager.Instance.OnBattleStart(player);
         SkillManager.Instance.OnAcivateSkill(player);
+        uiManager.UpdateStage(currentStage);
+
         // 스테이지 시작 셔플 연출
         yield return StartCoroutine(uiManager.ShowShuffleAnimation());
 
         deck.InitializeDeck();
         player.Init(deck);  // 플레이어는 체력 유지, 카드만 새로
         boss.InitBoss(deck, currentStage);  // 보스는 스테이지에 맞춰 새로 등장
+        uiManager.UpdateStatusUI();
         DealCommunityCards();
         revealedCardCount = 0;
-
-        uiManager.UpdateStatusUI(currentStage);
 
         // 라운드 카드 나누기
         yield return StartCoroutine(DealRoundCards());
@@ -134,7 +135,7 @@ public class BattleManager : MonoBehaviour
         Debug.Log($"플레이어 합: {playerScore}, 보스 합: {bossScore}");
         CalculateDamage(playerScore, bossScore);
 
-        uiManager.UpdateStatusUI(currentStage);
+        uiManager.UpdateStatusUI();
 
         //결과창 & 버튼 처리
         uiManager.ShowResult(boss.IsDefeated(), player.hp <= 0, playerScore, bossScore);
@@ -163,7 +164,7 @@ public class BattleManager : MonoBehaviour
 
         // 새로운 라운드를 위해 카드 초기화
         player.ClearHand();
-        boss.ClearHand();
+        boss.ResetHand();
         communityCards.Clear();
         revealedCardCount = 0;
 
