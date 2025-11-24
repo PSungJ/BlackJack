@@ -3,16 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class FloatingDamageText : MonoBehaviour
+public class DamageText : MonoBehaviour
 {
     public TMP_Text text;
     public float moveY = 60f;
     public float duration = 0.6f;
     public float fadeTime = 0.3f;
 
-    public void Init(int damage)
+    public void Init(int amount, bool isHeal = false)
     {
-        text.text = $"-{damage}";
+        text = GetComponent<TextMeshProUGUI>();
+
+        if (isHeal)
+        {
+            text.text = $"+{amount}";
+            text.color = Color.green;
+        }
+        else
+        {
+            text.text = $"-{amount}";
+            text.color = Color.red;
+        }
         StartCoroutine(Play());
     }
 

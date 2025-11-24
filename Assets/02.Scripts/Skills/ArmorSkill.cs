@@ -10,6 +10,7 @@ public class ArmorSkill : PassiveSkill
     public override void OnStageClear(PlayerController player)
     {
         player.AddArmor(armorGain);
+        BattleUIManager.Instance.UpdateStatusUI();  // UI 갱신
         Debug.Log($"[ARMOR] 스테이지 클리어 → 방어막 +{armorGain}");
     }
 }

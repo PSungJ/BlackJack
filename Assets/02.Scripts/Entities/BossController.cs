@@ -46,16 +46,6 @@ public class BossController : MonoBehaviour
         activeCards = new List<Card>(handCards);
     }
 
-    public int GetMinPossibleScore()
-    {
-        return GetTotalValue(new List<Card>()); // 현재 점수 기준 최소
-    }
-
-    public int GetMaxPossibleScore()
-    {
-        return GetTotalValue(new List<Card>()) + 10; // 최대 10 정도 여유 (Ace 등)
-    }
-
     public void TakeDamage(int dmg)
     {
         int damage = dmg;

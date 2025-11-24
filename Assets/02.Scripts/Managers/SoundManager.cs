@@ -16,6 +16,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip standButtonSfx;
     public AudioClip damageSfx;
     public AudioClip thinkingSfx;
+    public AudioClip healSfx;
 
     private float idleTimer = 0f;
     private bool isThinkingPlayed = false;
@@ -64,6 +65,7 @@ public class SoundManager : MonoBehaviour
     public void PlayHitButton() => PlaySFX(hitButtonSfx);
     public void PlayStandButton() => PlaySFX(standButtonSfx);
     public void PlayDamage() => PlaySFX(damageSfx);
+    public void PlayHeal() => PlaySFX(healSfx);
 
     // -------------------------------
     // 플레이어가 아무것도 안할 때

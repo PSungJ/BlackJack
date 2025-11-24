@@ -22,6 +22,7 @@ public class BattleUIManager : MonoBehaviour
     public TMP_Text resultText;
     public TMP_Text roundText;
     public TMP_Text stageClearText;
+    public TMP_Text armorText;
     public Image playerHPBar;
     public Image bossHPBar;
 
@@ -192,6 +193,7 @@ public class BattleUIManager : MonoBehaviour
     {
         playerHPText.text = $"HP : {player.hp}";
         bossHPText.text = $"HP : {boss.bossHp}";
+        armorText.text = $"{player.armor}";
 
         //HP Bar 채우기 갱신
         AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
@@ -537,7 +539,7 @@ public class BattleUIManager : MonoBehaviour
 
         // 4) 데미지 텍스트
         var dmgText = Instantiate(damageTextPrefab, bossIcon.transform.position, Quaternion.identity, transform);
-        dmgText.GetComponent<FloatingDamageText>().Init(damage);
+        dmgText.GetComponent<DamageText>().Init(damage);
 
         // 5) HP 감소 표시
         AnimateHPBar(bossHPBar, (float)boss.bossHp / boss.bossMaxHP);
@@ -573,15 +575,25 @@ public class BattleUIManager : MonoBehaviour
 
         // 4) 데미지 텍스트
         var dmgText = Instantiate(damageTextPrefab, playerIcon.transform.position, Quaternion.identity, transform);
-        dmgText.GetComponent<FloatingDamageText>().Init(damage);
+        dmgText.GetComponent<DamageText>().Init(damage);
 
         // 5) HP 감소 표시
         AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
     }
 
-    public void ShowHealEffect()
+    public IEnumerator ShowHealEffect(int hp)
     {
+        // HP 바 애니메이션과 맞춰서 바로 실행
+        AnimateHPBar(playerHPBar, (float)player.hp / player.maxHP);
+        playerHPText.text = $"HP : {player.hp}";
 
+        // Heal 텍스트
+        var dmgText = Instantiate(damageTextPrefab, playerIcon.transform.position, Quaternion.identity, transform);
+        dmgText.GetComponent<DamageText>().Init(hp, true);
+
+        StartCoroutine(playerIcon.GetComponent<UIFlash>().Flash(Color.green));
+
+        yield return null;
     }
 
     public void ShowCheatPreview(Card card)
@@ -598,7 +610,7 @@ public class BattleUIManager : MonoBehaviour
     {
         // 화면 중앙에 예측 텍스트 띄우기
         resultText.gameObject.SetActive(true);
-        resultText.text = $"Boss 예상 점수 범위: {min} ~ {max}";
+        resultText.text = $"Maybe Boss Score is Between in {min} ~ {max}";
     }
 
     public void ShowReviveEffect()
