@@ -22,7 +22,8 @@ public class ReviveSkill : PassiveSkill
             state.reviveCooldownRemain = state.reviveCooldown;
 
             Debug.Log("[REVIVE] 부활 발동!");
-            BattleUIManager.Instance.ShowReviveEffect();
+
+            BattleUIManager.Instance.UpdateReviveUI();   // 쿨타임 표시
         }
     }
 
@@ -40,5 +41,7 @@ public class ReviveSkill : PassiveSkill
                 Debug.Log("[REVIVE] 쿨다운 완료, 다시 사용 가능!");
             }
         }
+        // 스테이지 클리어 시마다 감소 반영
+        BattleUIManager.Instance.UpdateReviveUI();
     }
 }

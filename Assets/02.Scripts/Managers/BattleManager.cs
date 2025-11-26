@@ -32,6 +32,7 @@ public class BattleManager : MonoBehaviour
         SkillManager.Instance.OnBattleStart(player);
         SkillManager.Instance.OnAcivateSkill(player);
         uiManager.UpdateStage(currentStage);
+        uiManager.UpdateReviveUI();
 
         // 스테이지 시작 셔플 연출
         yield return StartCoroutine(uiManager.ShowShuffleAnimation());
@@ -239,7 +240,6 @@ public class BattleManager : MonoBehaviour
     {
         int damage = Mathf.Abs(playerScore - bossScore);
         player.TakeDamage(damage);
-        SkillManager.Instance.OnPlayerDamaged(player);
         StartCoroutine(uiManager.BossDamageEffectToPlayer(damage));
 
         Debug.Log($"보스 승! 플레이어 {damage} 데미지");

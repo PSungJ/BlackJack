@@ -23,15 +23,17 @@ public class BattleUIManager : MonoBehaviour
     public TMP_Text roundText;
     public TMP_Text stageClearText;
     public TMP_Text armorText;
+    public TMP_Text reviveCooldownText;
     public Image playerHPBar;
     public Image bossHPBar;
 
-    [Header("Damage Effect")]
+    [Header("Effect")]
     public GameObject playerIcon;
     public GameObject bossIcon;
     public GameObject projectilePrefab;
     public GameObject hitEffectPrefab;
     public GameObject damageTextPrefab;
+    public GameObject reviveEffect;
 
     [Header("버튼")]
     public Button hitButton;
@@ -53,6 +55,7 @@ public class BattleUIManager : MonoBehaviour
     [Header("스킬")]
     public TMP_Text skillUnlockText;
     public GameObject skillUnlockPanel;
+    public Image reviveCooldownFill;
 
     private List<GameObject> cardUIs = new List<GameObject>();
 
@@ -77,6 +80,8 @@ public class BattleUIManager : MonoBehaviour
         roundText.gameObject.SetActive(false);
         skillUnlockPanel.SetActive(false);
         stageClearText.gameObject.SetActive(false);
+        reviveCooldownText.gameObject.SetActive(false);
+        reviveCooldownFill.gameObject.SetActive(false);
     }
 
     public IEnumerator ShowShuffleAnimation()
@@ -613,13 +618,76 @@ public class BattleUIManager : MonoBehaviour
         resultText.text = $"Maybe Boss Score is Between in {min} ~ {max}";
     }
 
-    public void ShowReviveEffect()
+    public IEnumerator ShowReviveEffect()
     {
-        Debug.Log("[REVIVE] 플레이어 부활!");
+        Debug.Log("[VFX] Revive Effect Instantiated");
 
-        // TODO: 부활 애니메이션, 이펙트, 사운드 넣기
-        // reviveEffect.Play();
+        GameObject vfx = Instantiate(reviveEffect, playerIcon.transform);
+        RectTransform rt = vfx.GetComponent<RectTransform>();
+
+        if (rt != null)
+        {
+            rt.localPosition = Vector3.zero;
+            rt.localScale = Vector3.one;
+        }
+        else
+        {
+            vfx.transform.localPosition = Vector3.zero;
+        }
+
+        // Renderer 강제 제어
+        var renderers = vfx.GetComponentsInChildren<ParticleSystemRenderer>();
+        foreach (var r in renderers)
+        {
+            r.sortingLayerName = "UI";   // UI와 같은 Layer
+            r.sortingOrder = 100;        // 무조건 UI 위
+            r.renderMode = ParticleSystemRenderMode.Billboard;
+        }
+
+        // 파티클 재생
+        foreach (var ps in vfx.GetComponentsInChildren<ParticleSystem>())
+            ps.Play();
+
+        yield return new WaitForSeconds(1.5f);
+
+        Destroy(vfx);
     }
+
+    public void UpdateReviveUI()
+    {
+        // ReviveSkill 상태 가져오기
+        var reviveSkill = SkillManager.Instance.skillStates
+            .Find(s => s.data is ReviveSkill);
+
+        if (reviveSkill == null || !reviveSkill.unlocked)
+        {
+            reviveCooldownText.text = "";
+            reviveCooldownFill.fillAmount = 0f;   // 비활성화 상태
+            return;
+        }
+
+        // 사용 가능 상태
+        if (reviveSkill.reviveReady)
+        {
+            reviveCooldownFill.gameObject.SetActive(false);
+            reviveCooldownText.gameObject.SetActive(false);
+
+            reviveCooldownFill.fillAmount = 1f;   // 풀 차있음
+        }
+        // 쿨타임 중
+        else
+        {
+            reviveCooldownFill.gameObject.SetActive(true);
+            reviveCooldownText.gameObject.SetActive(true);
+            reviveCooldownText.text = $"{reviveSkill.reviveCooldownRemain}";
+            reviveCooldownText.color = Color.red;
+
+            float ratio = (float)reviveSkill.reviveCooldownRemain / reviveSkill.reviveCooldown;
+            reviveCooldownFill.fillAmount = ratio;
+            reviveCooldownFill.color = Color.red;
+        }
+    }
+
 
     public IEnumerator ShowSkillUnlockedCoroutine(string skillName)
     {

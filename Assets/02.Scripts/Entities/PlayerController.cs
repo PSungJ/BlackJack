@@ -97,24 +97,37 @@ public class PlayerController : MonoBehaviour
         // 일반적인 데미지 처리
         hp = Mathf.Clamp(hp - damage, 0, maxHP);
 
-        // Revive 시도
+        // Revive 체크 구간
         if (hp <= 0)
         {
-            int previousHP = hp;  // debug용
-            SkillManager.Instance.OnPlayerDamaged(this); // ReviveSkill 실행
-
-            // Revive 성공 여부 확인
-            if (hp > 0)  // Revive가 hp를 되살림!
-            {
-                Debug.Log($"[REVIVE] 체력 복구 완료! {previousHP} → {hp}");
-                return;
-            }
-
-            // 진짜 죽음
-            hp = 0;
-            Debug.Log("[Damage] 플레이어 사망");
+            StartCoroutine(HandleDeath());
             return;
         }
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        Debug.Log("[Damage] Player Down. Checking revive...");
+
+        // ReviveSkill 호출
+        SkillManager.Instance.OnPlayerDamaged(this);
+
+        // ReviveSkill이 hp를 되살렸다면 코루틴 실행
+        if (hp > 0)
+        {
+            Debug.Log("[REVIVE] revive detected → play revive VFX");
+
+            // 부활 이펙트 + UI 갱신까지 포함한 코루틴 호출
+            yield return StartCoroutine(BattleUIManager.Instance.ShowReviveEffect());
+
+            BattleUIManager.Instance.UpdateStatusUI();   // UI 업데이트
+            Debug.Log($"[REVIVE] revival complete! Current HP: {hp}");
+            yield break;
+        }
+
+        // Revive 실패 시
+        hp = 0;
+        Debug.Log("[Damage] Player Dead. No revive available.");
     }
 
     public int GetCardDisplayValue(Card card, int currentTotal)
