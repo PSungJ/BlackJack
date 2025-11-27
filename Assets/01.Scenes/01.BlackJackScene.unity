@@ -216,6 +216,8 @@ MonoBehaviour:
   skillUnlockText: {fileID: 1777695357}
   skillUnlockPanel: {fileID: 272984900}
   reviveCooldownFill: {fileID: 1731028135}
+  cheatGlowMaterial: {fileID: 2100000, guid: 1ed895370ba051045874c58800ff2070, type: 2}
+  defaultUIMaterial: {fileID: 0}
 --- !u!1 &46750248
 GameObject:
   m_ObjectHideFlags: 0

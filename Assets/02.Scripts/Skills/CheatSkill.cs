@@ -14,11 +14,24 @@ public class CheatSkill : ActiveSkill
         }
 
         int idx = battle.GetNextCommunityIndex();
-        Card next = battle.GetCommunityCardAt(idx);
 
-        if (next != null)
-            ui.ShowCheatPreview(next);
+        // 다음에 뒤집힐 커뮤니티 카드가 없는 경우
+        if (idx < 0 || idx >= battle.communityCards.Count)
+        {
+            Debug.Log("[CHEAT] 뒤집을 공용 카드가 없음");
+            return;
+        }
 
-        isUsedThisStage = true;
+        // UI에서 실제 투시 성공했을 때만 사용 처리
+        bool success = ui.ShowCheatPreview(idx);
+
+        if (success)
+        {
+            isUsedThisStage = true;
+        }
+        else
+        {
+            Debug.LogWarning("[CHEAT] 미리보기 실패 - 사용 처리 안함");
+        }
     }
 }

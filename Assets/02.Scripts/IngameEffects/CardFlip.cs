@@ -6,6 +6,13 @@ using UnityEngine.UI;
 public class CardFlip : MonoBehaviour
 {
     public Image cardImage;
+    private Material originalMaterial;   // 원본 Material 저장
+
+    // 치트용으로 Image를 넘겨주기 위한 프로퍼티
+    public Image GetImage()
+    {
+        return cardImage;
+    }
 
     private bool isFlipping = false;
     private float flipDuration = 0.4f;
@@ -15,6 +22,12 @@ public class CardFlip : MonoBehaviour
     [SerializeField] private Sprite backSprite;
     [SerializeField] private string cardLabel;
     [SerializeField] private bool isFaceUp = false;
+
+    private void Awake()
+    {
+        if (cardImage != null)
+            originalMaterial = cardImage.material;   // 초기 Material 저장
+    }
 
     public void Init(Sprite front, Sprite back, string text, bool startFaceUp)
     {
@@ -97,5 +110,25 @@ public class CardFlip : MonoBehaviour
             cardImage.sprite = frontSprite;
         else
             cardImage.sprite = backSprite;
+    }
+
+    public void ForceShowFront()
+    {
+        if (cardImage == null) return;
+
+        // 스프라이트만 앞면으로 바꿈 (상태는 건들지 않음)
+        cardImage.sprite = frontSprite;
+    }
+
+    public void ApplyGlow(Material glowMaterial)
+    {
+        if (cardImage == null || glowMaterial == null) return;
+        cardImage.material = glowMaterial;
+    }
+
+    public void RemoveGlow()
+    {
+        if (cardImage == null) return;
+        cardImage.material = originalMaterial;
     }
 }

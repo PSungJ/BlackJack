@@ -8,6 +8,8 @@ public class BattleUIManager : MonoBehaviour
 {
     public static BattleUIManager Instance { get; private set; }
     private Coroutine roundResultCoroutine;
+    private Coroutine cheatPulseCoroutine;
+    private GameObject currentPreviewCard;
 
     [Header("참조")]
     public BattleManager battleManager;
@@ -34,6 +36,7 @@ public class BattleUIManager : MonoBehaviour
     public GameObject hitEffectPrefab;
     public GameObject damageTextPrefab;
     public GameObject reviveEffect;
+    private GameObject cheatPreviewObj;
 
     [Header("버튼")]
     public Button hitButton;
@@ -56,6 +59,10 @@ public class BattleUIManager : MonoBehaviour
     public TMP_Text skillUnlockText;
     public GameObject skillUnlockPanel;
     public Image reviveCooldownFill;
+
+    [Header("Cheat Glow")]
+    public Material cheatGlowMaterial;
+    public Material defaultUIMaterial;   // 기본 UI 머티리얼
 
     private List<GameObject> cardUIs = new List<GameObject>();
 
@@ -275,12 +282,27 @@ public class BattleUIManager : MonoBehaviour
         var slot = communityCardParent.GetChild(index);
 
         if (slot.childCount == 0) return;  // 카드 없으면 종료
+        
+        GameObject card = slot.GetChild(0).gameObject;
 
-        var card = slot.GetChild(0); // ← 카드 오브젝트
-        var flip = card.GetComponent<CardFlip>();
+        // Cheat 투시 제거
+        ClearCheatPreview();
 
+        CardFlip flip = card.GetComponent<CardFlip>();
+        Image img = card.GetComponent<Image>();
+
+        // 알파 강제 복구
+        if (img != null)
+        {
+            Color c = img.color;
+            c.a = 1f;
+            img.color = c;
+        }
+
+        // Flip 실행
         if (flip != null)
         {
+            flip.RemoveGlow();
             StartCoroutine(FlipAndDo(() => {
                 UpdateStage(battleManager.currentStage);
             }, flip));
@@ -601,14 +623,89 @@ public class BattleUIManager : MonoBehaviour
         yield return null;
     }
 
-    public void ShowCheatPreview(Card card)
+    public bool ShowCheatPreview(int index)
     {
-        // TODO: 실제 UI 구성에 맞춰 변경
-        Debug.Log($"[CHEAT] 다음 카드: {card.rank} (value {card.value})");
+        if (index < 0 || index >= communityCardParent.childCount)
+        {
+            Debug.LogWarning("[CHEAT] 인덱스 오류");
+            return false;
+        }
 
-        // 카드 팝업 UI가 따로 있다면 그곳에 표시
-        // cheatPreviewUI.SetActive(true);
-        // cheatPreviewUI.SetCard(card.frontSprite);
+        Transform slot = communityCardParent.GetChild(index);
+
+        if (slot.childCount == 0)
+        {
+            Debug.LogWarning("[CHEAT] 슬롯에 카드 없음");
+            return false;
+        }
+
+        GameObject card = slot.GetChild(0).gameObject;
+
+        CardFlip flip = card.GetComponentInChildren<CardFlip>();
+        Image img = card.GetComponentInChildren<Image>();
+
+        if (flip == null || img == null)
+            return false;
+
+        // 이전 투시 코루틴 제거
+        ClearCheatPreview();
+
+        // 카드 강제 앞면
+        flip.ForceShowFront();
+
+        // 투명도 적용
+        Color c = img.color;
+        c.a = 0.4f;
+        img.color = c;
+
+        // Glow Material 적용
+        if (cheatGlowMaterial != null)
+            flip.ApplyGlow(cheatGlowMaterial);
+
+        // 기억
+        currentPreviewCard = card;
+        cheatPulseCoroutine = StartCoroutine(PulsePreview(card));
+
+        Debug.Log("[CHEAT] 카드 투시 적용 성공!");
+        return true;
+    }
+
+    private IEnumerator PulsePreview(GameObject card)
+    {
+        Image img = card.GetComponent<Image>();
+        if (img == null) yield break;
+
+        float t = 0f;
+
+        while (true)
+        {
+            t += Time.deltaTime;
+            float glow = 1.2f + Mathf.Sin(t * 4f) * 0.4f;
+            img.color = Color.yellow * glow;
+            yield return null;
+        }
+    }
+
+    private void ClearCheatPreview()
+    {
+        if (cheatPulseCoroutine != null)
+        {
+            StopCoroutine(cheatPulseCoroutine);
+            cheatPulseCoroutine = null;
+        }
+
+        if (currentPreviewCard != null)
+        {
+            Image img = currentPreviewCard.GetComponentInChildren<Image>();
+            if (img != null)
+            {
+                Color c = img.color;
+                c.a = 1f;          // 완전 복구
+                img.color = c;
+            }
+
+            currentPreviewCard = null;
+        }
     }
 
     public void ShowFocusPrediction(int min, int max)
