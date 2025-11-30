@@ -13,7 +13,7 @@ public class SkillState
 
     // ReviveSkill¿ë
     public bool reviveReady = true;
-    public int reviveCooldown = 5;
+    public int reviveCooldown = 4;
     public int reviveCooldownRemain = 0;
 }
 

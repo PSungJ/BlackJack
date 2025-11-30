@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     public List<Card> handCards = new List<Card>();     // 기본 2장
     public List<Card> activeCards = new List<Card>();   // 손패 + 오픈된 공용카드
-    public int maxHP = 100;
+    public int maxHP = 50;
     public int hp;
 
     public int armor = 0;   // 방어막

@@ -2427,8 +2427,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handCards: []
   activeCards: []
-  maxHP: 100
-  hp: 100
+  maxHP: 50
+  hp: 50
   armor: 0
 --- !u!1 &830077841
 GameObject:
@@ -3296,12 +3296,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgmSource: {fileID: 1357426606}
   sfxSource: {fileID: 654722126}
-  bgm: {fileID: 8300000, guid: e917a17361f181c42bf62a05b568e264, type: 3}
+  lobbyBgm: {fileID: 0}
+  gameBgm: {fileID: 0}
   hitButtonSfx: {fileID: 8300000, guid: 398fd6866613ec04aaa177ca05e43bc0, type: 3}
   standButtonSfx: {fileID: 8300000, guid: ff523af80d5092b4fac7e6a5313bed70, type: 3}
   damageSfx: {fileID: 8300000, guid: fd9f383be73b9134cab4894b8d43a9fd, type: 3}
   thinkingSfx: {fileID: 8300000, guid: b5d98a60e9560354fb97d1288b4b5cfb, type: 3}
   healSfx: {fileID: 8300000, guid: 0d3148006afadd04495ea86f01d00903, type: 3}
+  reviveSfx: {fileID: 8300000, guid: 3d2aa4222fba9cf41b5574098e4f7ef6, type: 3}
 --- !u!4 &1065819135
 Transform:
   m_ObjectHideFlags: 0
@@ -3366,7 +3368,7 @@ MonoBehaviour:
   handCards: []
   activeCards: []
   stageLevel: 1
-  baseHP: 1
+  baseHP: 20
   hpGrowthRate: 1.2
   bossMaxHP: 0
   bossHp: 0
@@ -5967,31 +5969,31 @@ MonoBehaviour:
     unlocked: 0
     usedThisStage: 0
     reviveReady: 1
-    reviveCooldown: 5
+    reviveCooldown: 4
     reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: bf94382d697ddbb4e8c27c6b5891f50c, type: 2}
     unlocked: 0
     usedThisStage: 0
     reviveReady: 1
-    reviveCooldown: 5
+    reviveCooldown: 4
     reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: 03bd4a352708ee64ea432173c0cc7c6c, type: 2}
     unlocked: 0
     usedThisStage: 0
     reviveReady: 1
-    reviveCooldown: 5
+    reviveCooldown: 4
     reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: 0090aa8a7e8c5bf498f52dbdbefe4731, type: 2}
     unlocked: 0
     usedThisStage: 0
     reviveReady: 1
-    reviveCooldown: 5
+    reviveCooldown: 4
     reviveCooldownRemain: 0
   - data: {fileID: 11400000, guid: 1f63343847f7acc4a87d68bb4e5bff78, type: 2}
     unlocked: 0
     usedThisStage: 0
     reviveReady: 1
-    reviveCooldown: 5
+    reviveCooldown: 4
     reviveCooldownRemain: 0
 --- !u!1 &1995705805
 GameObject:

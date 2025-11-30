@@ -22,6 +22,7 @@ public class ReviveSkill : PassiveSkill
             state.reviveCooldownRemain = state.reviveCooldown;
 
             Debug.Log("[REVIVE] 부활 발동!");
+            SoundManager.Instance.PlayRevive();
 
             BattleUIManager.Instance.UpdateReviveUI();   // 쿨타임 표시
         }

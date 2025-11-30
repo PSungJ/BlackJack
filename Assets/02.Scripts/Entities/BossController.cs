@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using static Card;
 
@@ -10,7 +9,7 @@ public class BossController : MonoBehaviour
 
     [Header("보스 설정")]
     public int stageLevel = 1;
-    public int baseHP = 50;
+    public int baseHP = 20;
     public float hpGrowthRate = 1.2f;
     public int bossMaxHP;
     public int bossHp;

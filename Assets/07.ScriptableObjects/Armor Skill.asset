@@ -16,5 +16,4 @@ MonoBehaviour:
   description: 
   unlockStage: 6
   icon: {fileID: 21300000, guid: 66f468182fc56e044a5eeafd0ec06859, type: 3}
-  isUnlocked: 0
-  armorGain: 10
+  armorGain: 5

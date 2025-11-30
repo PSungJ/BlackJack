@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class BattleUIManager : MonoBehaviour
 {
@@ -81,6 +82,7 @@ public class BattleUIManager : MonoBehaviour
         hitButton.onClick.AddListener(OnHit);
         standButton.onClick.AddListener(OnStand);
         nextStageButton.onClick.AddListener(OnNextStage);
+        goLobbyButton.onClick.AddListener(OnLobby);
 
         resultText.gameObject.SetActive(false);
         nextStageButton.gameObject.SetActive(false);
@@ -366,6 +368,11 @@ public class BattleUIManager : MonoBehaviour
         standButton.interactable = true;
 
         battleManager.NextStage();
+    }
+
+    private void OnLobby()
+    {
+        SceneManager.LoadScene("00.LobbyScene");
     }
 
     public void ShowResult(bool bossDefeated, bool playerDefeated, int playerScore, int bossScore)

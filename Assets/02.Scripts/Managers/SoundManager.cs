@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
@@ -11,15 +12,19 @@ public class SoundManager : MonoBehaviour
     public AudioSource sfxSource;
 
     [Header("오디오 클립")]
-    public AudioClip bgm;
+    public AudioClip lobbyBgm;
+    public AudioClip gameBgm;
     public AudioClip hitButtonSfx;
     public AudioClip standButtonSfx;
     public AudioClip damageSfx;
     public AudioClip thinkingSfx;
     public AudioClip healSfx;
+    public AudioClip reviveSfx;
 
     private float idleTimer = 0f;
     private bool isThinkingPlayed = false;
+
+    private bool isGameScene = false;
 
     private void Awake()
     {
@@ -29,25 +34,61 @@ public class SoundManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    private void OnEnable()
+    {
+        // Scene 로드 이벤트 등록
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void Start()
     {
-        PlayBGM();
+        PlayBGMForCurrentScene();
     }
 
     private void Update()
     {
+        if (!isGameScene) return;   // 로비에서는 idle 체크 안함
+
         HandleIdleSound();
     }
 
     // -------------------------------
-    // BGM
+    // 씬 변경 시 자동 BGM 변경
     // -------------------------------
-    public void PlayBGM()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (bgmSource == null || bgm == null) return;
+        PlayBGMForCurrentScene();
+        
+        // 게임 씬 판별
+        isGameScene = !scene.name.Contains("Lobby");
 
+        // 씬 전환 시 타이머 초기화
+        ResetIdleTimer();
+    }
+
+    private void PlayBGMForCurrentScene()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName.Contains("Lobby"))
+            ChangeBGM(lobbyBgm);
+        else
+            ChangeBGM(gameBgm);
+    }
+
+    private void ChangeBGM(AudioClip newClip)
+    {
+        if (newClip == null || bgmSource.clip == newClip)
+            return;
+
+        bgmSource.Stop();
+        bgmSource.clip = newClip;
         bgmSource.loop = true;
-        bgmSource.clip = bgm;
         bgmSource.Play();
     }
 
@@ -66,6 +107,7 @@ public class SoundManager : MonoBehaviour
     public void PlayStandButton() => PlaySFX(standButtonSfx);
     public void PlayDamage() => PlaySFX(damageSfx);
     public void PlayHeal() => PlaySFX(healSfx);
+    public void PlayRevive() => PlaySFX(reviveSfx);
 
     // -------------------------------
     // 플레이어가 아무것도 안할 때

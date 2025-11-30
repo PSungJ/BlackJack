@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Skills/ArmorSkill")]
 public class ArmorSkill : PassiveSkill
 {
-    public int armorGain = 10;
+    public int armorGain = 5;
 
     public override void OnStageClear(PlayerController player)
     {
