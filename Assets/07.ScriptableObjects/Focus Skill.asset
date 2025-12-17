@@ -13,8 +13,12 @@ MonoBehaviour:
   m_Name: Focus Skill
   m_EditorClassIdentifier: 
   skillName: Focus
-  description: 
+  description: "(Active)\n7 \uC2A4\uD14C\uC774\uC9C0 \uD074\uB9AC\uC5B4 \uD6C4 \uD574\uAE08,
+    \uB2E4\uC74C Hit \uC2DC \uBCF4\uC2A4\uC758 \uB2E4\uC74C \uD569\uC0B0 \uC810\uC218
+    \uC608\uCE21 \uBC94\uC704\uAC00 UI\uC5D0 \uD45C\uC2DC\uB428 (\uC608: 12~16)\r\n\uC2A4\uD14C\uC774\uC9C0\uB2F9
+    1\uD68C \uC0AC\uC6A9\uAC00\uB2A5"
   unlockStage: 8
   icon: {fileID: 21300000, guid: 18b5f243fe121c148b1b29e8fd59d737, type: 3}
-  isUnlocked: 0
   isUsedThisStage: 0
+  minError: 2
+  maxError: 8

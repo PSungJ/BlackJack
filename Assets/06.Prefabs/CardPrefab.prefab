@@ -85,7 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4306954897616811949}
   - component: {fileID: -7070587456234407678}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CardPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}

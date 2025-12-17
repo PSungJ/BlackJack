@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SkillSlot : MonoBehaviour
+public class SkillSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI 연결")]
     public SkillState state;       // SkillManager에서 직접 연결
@@ -58,5 +59,33 @@ public class SkillSlot : MonoBehaviour
 
             lockObj.SetActive(false);
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (state == null)
+        {
+            Debug.LogError("[SkillSlot] state 가 연결되어있지 않음");
+            return;
+        }
+
+        if (state.data == null)
+        {
+            Debug.LogError("[SkillSlot] state.data 가 null 입니다");
+            return;
+        }
+
+        if (SkillTooltip.Instance == null)
+        {
+            Debug.LogError("[SkillSlot] SkillTooltip.Instance 가 없습니다 (씬에 없음)");
+            return;
+        }
+
+        SkillTooltip.Instance.Show(state.data, Input.mousePosition);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        SkillTooltip.Instance.Hide();
     }
 }

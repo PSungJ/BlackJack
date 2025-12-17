@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class SkillBase : ScriptableObject
 {
     public string skillName;
+    [TextArea(3, 5)]
     public string description;
     public int unlockStage;
     public Sprite icon;

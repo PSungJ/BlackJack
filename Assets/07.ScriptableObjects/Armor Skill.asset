@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Armor Skill
   m_EditorClassIdentifier: 
   skillName: Armor
-  description: 
+  description: "(Passive)\n5 \uC2A4\uD14C\uC774\uC9C0 \uD074\uB9AC\uC5B4 \uD6C4 \uD574\uAE08,
+    \uD574\uAE08\uB41C \uC21C\uAC04\uBD80\uD130 \uC2A4\uD14C\uC774\uC9C0 \uD074\uB9AC\uC5B4\uB9C8\uB2E4
+    \uBC29\uC5B4\uB9C9 5\uC529 \uD68D\uB4DD"
   unlockStage: 6
   icon: {fileID: 21300000, guid: 66f468182fc56e044a5eeafd0ec06859, type: 3}
   armorGain: 5
